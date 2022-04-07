@@ -4,7 +4,8 @@
 #include <stdint.h>
 
 struct gameso { 
-
+  
+  gameso *next;
   uint8_t num;  // Numero de partie
   uint8_t nb_player; // Nombre de joueurs
 };
