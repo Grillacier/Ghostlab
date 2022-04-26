@@ -10,7 +10,7 @@
 #include <time.h>
 #include <pthread.h>
 #include <stdint.h>
-#include "./includes/gameList.c"
+#include "../includes/gameList.c"
 
 //Variable global
 uint8_t nbgame = 0;
@@ -19,18 +19,18 @@ uint8_t nbgame = 0;
 
 //Verrou
 pthread_mutex_t verrou = PTHREAD_MUTEX_INITIALIZER;
+void * listGame = malloc(sizeof(char)*9+sizeof(uint8_t));
 
 void *lobby(void* sock){
     int sock2 = *(int*)sock;
          
-	 pthread_mutex_lock(&verrou);
-	 void * listGame = malloc(sizeof(char)*9+sizeof(uint8_t));
 	 printf("%ld \n",sizeof(listGame));
 	 char *str_game = "GAMES ";
 	 char *str_etoile = "***";
 	 
 	 printf("%ld \n",strlen(str_game));
 	 
+	 pthread_mutex_lock(&verrou);
 	 memmove(listGame,str_game,strlen(str_game));
 	 memmove(listGame+strlen(str_game),&nbgame,sizeof(uint8_t));
 	 memmove(listGame+strlen(str_game)+sizeof(uint8_t),str_etoile,strlen(str_etoile));
