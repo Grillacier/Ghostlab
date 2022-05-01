@@ -16,7 +16,17 @@ public class Client {
 
 
     //messages reçus du serveur
+    //recevoir un message sans paramètre
+    ////[REGNO***] [DUNNO***] [GOBYE***] [MALL!***] [SEND!***] [NSEND!***]
+    public void receiveMess(BufferedReader br) throws Exception {
+        char[] buffer = new char[8];
+        br.read(buffer, 0, 8);
+        String message = new String(buffer);
+        System.out.println(message);
+    }
+
     //recevoir le nombre de parties pas commencées
+    //[GAMES_n***]
     public void receiveGames(BufferedReader br) throws Exception {
         char[] buffer = new char[10]; //pas de caractère de fin de ligne donc il br.readline() ne fonctionne pas
         br.read(buffer, 0, 10); //écrit le contenu de br dans buffer
@@ -27,6 +37,7 @@ public class Client {
     }
 
     //recevoir les parties disponibles
+    //[OGAME␣m␣s***]
     public void receiveOgame(int nbGames, BufferedReader br) throws Exception {
         char[] buffer = new char[12];
         for (int i = 0; i < nbGames; i++) {
@@ -39,6 +50,7 @@ public class Client {
     }
 
     //recevoir message de confirmation d'inscription
+    //[REGOK␣m***]
     public void receiveRegok(BufferedReader br) throws Exception {
         char[] buffer = new char[10];
         br.read(buffer, 0, 10);
@@ -48,15 +60,19 @@ public class Client {
     }
 
     //recevoir message d'échec d'inscription
+    //[REGNO***]
+    /*
     public void receiveRegno(BufferedReader br) throws Exception {
         char[] buffer = new char[8];
         br.read(buffer, 0, 8);
         String message = new String(buffer);
         System.out.println(message);
     }
+    */
 
     //identique à receiveRegok()
     //recevoir message de confirmation de désinscription
+    //[UNROK␣m***]
     public void receiveUnrok(BufferedReader br) throws Exception {
         char[] buffer = new char[10];
         br.read(buffer, 0, 10);
@@ -67,14 +83,31 @@ public class Client {
 
     //identique à receiveRegno()
     //recevoir message d'erreur
+    //[DUNNO***]
+    /*
     public void receiveDunno(BufferedReader br) throws Exception {
         char[] buffer = new char[8];
         br.read(buffer, 0, 8);
         String message = new String(buffer);
         System.out.println(message);
     }
+     */
 
     //recevoir la taille du labyrinthe
+    //[SIZE!␣m␣h␣w***]
+    public void receiveSize(BufferedReader br) throws Exception {
+        char[] buffer = new char[16];
+        br.read(buffer, 0, 16);
+        String message = new String(buffer);
+        int game = buffer[6];
+        int height = buffer[8];
+        int height2 = buffer[9];
+        int width = buffer[11];
+        int width2 = buffer[12];
+        System.out.println(message.substring(0, 6) + game + message.charAt(7) + height + height2
+                + message.charAt(10) + width + width2 + message.substring(13));
+    }
+    /*
     public void receiveSize(BufferedReader br) throws Exception {
         char[] buffer = new char[14];
         br.read(buffer, 0, 14);
@@ -85,8 +118,10 @@ public class Client {
         System.out.println(message.substring(0, 6) + game + message.charAt(7) + height
                 + message.charAt(9) + width + message.substring(11));
     }
+    */
 
     //recevoir la liste des joueurs d'une partie
+    //[LIST!␣m␣s***]
     public void receiveList(BufferedReader br) throws Exception {
         char[] buffer = new char[12];
         br.read(buffer, 0, 12);
@@ -98,18 +133,33 @@ public class Client {
     }
 
     //recevoir les joueurs d'une partie
+    //[PLAYR␣id***]
     public void receivePlayr(int nbPlayers, BufferedReader br) throws Exception {
-        char[] buffer = new char[10];
+        char[] buffer = new char[17];
         for (int i = 0; i < nbPlayers; i++) {
-            br.read(buffer, 0, 10);
+            br.read(buffer, 0, 17);
             String message = new String(buffer);
-            int id = buffer[6];
-            System.out.println(message.substring(0, 6) + id + message.substring(7));
+            System.out.println(message);
         }
     }
 
     //recevoir le message de début de partie
-    public void receiveStart(BufferedReader br) throws Exception {
+    //[WELCO␣m␣h␣w␣f␣ip␣port***]
+    public void receiveWelco(BufferedReader br) throws Exception {
+        char[] buffer = new char[39];
+        br.read(buffer, 0, 39);
+        String message = new String(buffer);
+        int game = buffer[6];
+        int height = buffer[8];
+        int height2 = buffer[9];
+        int width = buffer[11];
+        int width2 = buffer[12];
+        int ghosts = buffer[14];
+        System.out.println(message.substring(0,6) + game + message.charAt(7) + height + height2
+        + message.charAt(10) + width + width2 + message.charAt(13) + ghosts + message.substring(15));
+    }
+    /*
+    public void receiveWelco(BufferedReader br) throws Exception {
         char[] buffer = new char[20];
         br.read(buffer, 0, 20);
         String message = new String(buffer);
@@ -123,8 +173,17 @@ public class Client {
                 + width + message.charAt(11) + ghosts + message.charAt(13) + ip + message.charAt(15)
                 + port + message.substring(17));
     }
+    */
 
     //recevoir position dans le labyrinthe
+    //[POSIT␣id␣x␣y***]
+    public void receivePosit(BufferedReader br) throws Exception {
+        char[] buffer = new char[25];
+        br.read(buffer, 0, 25);
+        String message = new String(buffer);
+        System.out.println(message);
+    }
+    /*
     public void receivePosit(BufferedReader br) throws Exception {
         char[] buffer = new char[14];
         br.read(buffer, 0, 14);
@@ -135,6 +194,73 @@ public class Client {
         System.out.println(message.substring(0, 6) + id + message.charAt(7) + x + message.charAt(9)
                 + y + message.substring(11));
     }
+    */
+
+    //recevoir message d'au revoir
+    //[GOBYE***]
+    /*
+    public void receiveGobye(BufferedReader br) throws Exception {
+        char[] buffer = new char[8];
+        br.read(buffer, 0, 8);
+        String message = new String(buffer);
+        System.out.println(message);
+    }
+     */
+
+    //recevoir le nombre de joueurs présents dans la partie
+    //[GLIS!␣s***]
+    public void receiveGlis(BufferedReader br) throws Exception {
+        char[] buffer = new char[10];
+        br.read(buffer, 0, 10);
+        String message = new String(buffer);
+        int s = buffer[6];
+        System.out.println(message.substring(0, 6) + s + message.substring(7));
+        receiveGplyr(s, br);
+    }
+
+    //recevoir les informations des autres joueurs
+    //[GPLYR␣id␣x␣y␣p***]
+    public void receiveGplyr(int nbPlayers, BufferedReader br) throws Exception {
+        char[] buffer = new char[30];
+        for (int i = 0; i < nbPlayers; i++) {
+            br.read(buffer, 0, 30);
+            String message = new String(buffer);
+            System.out.println(message);
+        }
+    }
+
+    //recevoir confirmation de multi-diffusion
+    //[MALL!***]
+    /*
+    public void receiveMall(BufferedReader br) throws Exception {
+        char[] buffer = new char[8];
+        br.read(buffer, 0, 8);
+        String message = new String(buffer);
+        System.out.println(message);
+    }
+     */
+
+    //recevoir confirmation d'envoi de message
+    //[SEND!***]
+    /*
+    public void receiveSend(BufferedReader br) throws Exception {
+        char[] buffer = new char[8];
+        br.read(buffer, 0, 8);
+        String message = new String(buffer);
+        System.out.println(message);
+    }
+     */
+
+    //recevoir message de non envoie de message
+    //[NSEND***]
+    /*
+    public void receiveNsend(BufferedReader br) throws Exception {
+        char[] buffer = new char[8];
+        br.read(buffer, 0, 8);
+        String message = new String(buffer);
+        System.out.println(message);
+    }
+     */
 
 
     //messages envoyés au serveur
@@ -186,6 +312,97 @@ public class Client {
     //demander la liste des parties pas commencées
     public void listGames(PrintWriter pw) throws Exception {
         pw.print("GAME?***");
+        pw.flush();
+    }
+
+    //se déplacer dans le labyrinthe
+    public void move(PrintWriter pw) throws Exception {
+        String directionString = "";
+        Scanner dir = new Scanner(System.in);
+
+        while (directionString.equals("")) {
+            System.out.println("Which direction do you want to go? ");
+            System.out.println("1. Up");
+            System.out.println("2. Down");
+            System.out.println("3. Left");
+            System.out.println("4. Right");
+            int direction = dir.nextInt();
+
+            switch (direction) {
+                case 1:
+                    directionString = "UPMOV ";
+                    break;
+                case 2:
+                    directionString = "DOMOV ";
+                    break;
+                case 3:
+                    directionString = "LEMOV ";
+                    break;
+                case 4:
+                    directionString = "RIMOV ";
+                    break;
+                default:
+                    System.out.println("Wrong direction");
+                    break;
+            }
+        }
+
+        String d = "";
+        while (d.length() < 4) {
+            System.out.println("How many steps do you want to go? ");
+            d = dir.next();
+            switch (d.length()) {
+                case 1:
+                    d = "00" + d;
+                    break;
+                case 2:
+                    d = "0" + d;
+                    break;
+                case 3:
+                    break;
+                default:
+                    System.out.println("Wrong number of steps");
+                    break;
+            }
+        }
+
+        pw.print(directionString + d + "***");
+        pw.flush();
+    }
+
+    //abandonner partie
+    public void iquit(PrintWriter pw) throws Exception {
+        pw.print("IQUIT***");
+        pw.flush();
+    }
+
+    //demander la liste des joueurs présents
+    public void listPlayersOnline(PrintWriter pw) throws Exception {
+        pw.print("GLIS?***");
+        pw.flush();
+    }
+
+    //demander à envoyer un message de 200 caractères maximum à tous les joueurs
+    public void sendMessage(PrintWriter pw) throws Exception {
+        Scanner message = new Scanner(System.in);
+        System.out.println("What message do you want to send? ");
+        String mess = message.nextLine();
+        if (mess.length() > 200)
+            mess = mess.substring(0, 200);
+        pw.print("MALL? " + mess + "***");
+        pw.flush();
+    }
+
+    //demander à envoyer un message de 200 caractères maximum à un joueur
+    public void sendMessageToPlayer(PrintWriter pw) throws Exception {
+        Scanner message = new Scanner(System.in);
+        System.out.println("What message do you want to send? ");
+        String mess = message.nextLine();
+        if (mess.length() > 200)
+            mess = mess.substring(0, 200);
+        System.out.println("Who do you want to send it to? ");
+        String id = message.nextLine();
+        pw.print("SEND? " + id + " " + mess + "***");
         pw.flush();
     }
 
