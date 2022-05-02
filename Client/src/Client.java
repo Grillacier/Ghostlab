@@ -452,9 +452,9 @@ public class Client {
         System.out.println(message);
     }
 
-    //recevoir un message d'un autre joueur
-    //[MESSA␣id␣mess+++] [MESSP␣id2␣mess+++]
-    public void mess(DatagramSocket dso) throws Exception {
+    //recevoir un message multi-diffusé par un autre joueur
+    //[MESSA␣id␣mess+++]
+    public void messa(DatagramSocket dso) throws Exception {
         byte[] data = new byte[218];
         DatagramPacket paquet = new DatagramPacket(data, data.length);
         dso.receive(paquet);
@@ -474,15 +474,14 @@ public class Client {
 
     //recevoir message privé
     //[MESSP␣id2␣mess+++]
-    /*
     public void messp(DatagramSocket dso) throws Exception {
         byte[] data = new byte[218];
         DatagramPacket paquet = new DatagramPacket(data, data.length);
         dso.receive(paquet);
+        InetSocketAddress id = (InetSocketAddress) paquet.getSocketAddress();
         String message = new String(paquet.getData(), 0, paquet.getLength());
-        System.out.println(message);
+        System.out.println(message.substring(0,6) + id.getHostName() + message.substring(14));
     }
-    */
 
 
 
