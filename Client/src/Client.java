@@ -2,12 +2,15 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.Scanner;
 
 public class Client {
-    private String id;
-    private String port;
+    private String id; //str de 8 char
+    private String port; //port UDP du client
 
     public Client(String id, String port) {
         this.id = id;
@@ -15,6 +18,7 @@ public class Client {
     }
 
 
+    //TCP
     //messages reçus du serveur
     //recevoir un message sans paramètre
     ////[REGNO***] [DUNNO***] [GOBYE***] [MALL!***] [SEND!***] [NSEND!***]
@@ -195,6 +199,24 @@ public class Client {
                 + y + message.substring(11));
     }
     */
+
+    //recevoir conformation de déplacement si on n'a pas rencontré de fantômes
+    //[MOVE!␣x␣y***]
+    public void receiveMove(BufferedReader br) throws Exception {
+        char[] buffer = new char[20];
+        br.read(buffer, 0, 20);
+        String message = new String(buffer);
+        System.out.println(message);
+    }
+
+    //recevoir le nombre de points et le nouveau nombre de points
+    //[MOVEF␣x␣y␣p***]
+    public void receiveMovef(BufferedReader br) throws Exception {
+        char[] buffer = new char[16];
+        br.read(buffer, 0, 16);
+        String message = new String(buffer);
+        System.out.println(message);
+    }
 
     //recevoir message d'au revoir
     //[GOBYE***]
@@ -407,6 +429,63 @@ public class Client {
     }
 
 
+
+
+    //UDP
+    //recevoir la nouvelle position d'un fantôme qui s'est déplacé
+    //[GHOST␣x␣y+++]
+    public void ghost(DatagramSocket dso) throws Exception {
+        byte[] data = new byte[16];
+        DatagramPacket paquet = new DatagramPacket(data, data.length);
+        dso.receive(paquet);
+        String message = new String(paquet.getData(), 0, paquet.getLength());
+        System.out.println(message);
+    }
+
+    //recevoir le nouveau score d'un joueur qui vient de capturer un fantôme
+    //[SCORE␣id␣p␣x␣y+++]
+    public void score(DatagramSocket dso) throws Exception {
+        byte[] data = new byte[30];
+        DatagramPacket paquet = new DatagramPacket(data, data.length);
+        dso.receive(paquet);
+        String message = new String(paquet.getData(), 0, paquet.getLength());
+        System.out.println(message);
+    }
+
+    //recevoir un message d'un autre joueur
+    //[MESSA␣id␣mess+++] [MESSP␣id2␣mess+++]
+    public void mess(DatagramSocket dso) throws Exception {
+        byte[] data = new byte[218];
+        DatagramPacket paquet = new DatagramPacket(data, data.length);
+        dso.receive(paquet);
+        String message = new String(paquet.getData(), 0, paquet.getLength());
+        System.out.println(message);
+    }
+
+    //recevoir message de fin de partie
+    //[ENDGA␣id␣p+++]
+    public void endga(DatagramSocket dso) throws Exception {
+        byte[] data = new byte[22];
+        DatagramPacket paquet = new DatagramPacket(data, data.length);
+        dso.receive(paquet);
+        String message = new String(paquet.getData(), 0, paquet.getLength());
+        System.out.println(message);
+    }
+
+    //recevoir message privé
+    //[MESSP␣id2␣mess+++]
+    /*
+    public void messp(DatagramSocket dso) throws Exception {
+        byte[] data = new byte[218];
+        DatagramPacket paquet = new DatagramPacket(data, data.length);
+        dso.receive(paquet);
+        String message = new String(paquet.getData(), 0, paquet.getLength());
+        System.out.println(message);
+    }
+    */
+
+
+
     public static void main(String[] args) {
         if (args.length != 3) {
             System.out.println("Usage: java Client <host> <portUDPClient> <portTCP>");
@@ -424,6 +503,7 @@ public class Client {
                 Socket socket = new Socket(args[0], port);
                 BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 PrintWriter pw = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
+                DatagramSocket dso = new DatagramSocket(port);
 
                 Client client = new Client(id, args[1]);
                 while (true) {
