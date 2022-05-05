@@ -20,24 +20,15 @@ public class Client {
 
     //TCP
     //messages reçus du serveur
-    //recevoir un message sans paramètre
-    ////[REGNO***] [DUNNO***] [GOBYE***] [MALL!***] [SEND!***] [NSEND!***]
-    public void receiveMess(BufferedReader br) throws Exception {
-        char[] buffer = new char[8];
-        br.read(buffer, 0, 8);
-        String message = new String(buffer);
-        System.out.println(message);
-    }
-
     //recevoir le nombre de parties pas commencées
     //[GAMES_n***]
     public void receiveGames(BufferedReader br) throws Exception {
-        char[] buffer = new char[10]; //pas de caractère de fin de ligne donc il br.readline() ne fonctionne pas
+        char[] buffer = new char[10]; //pas de caractère de fin de ligne donc br.readline() ne fonctionne pas
         br.read(buffer, 0, 10); //écrit le contenu de br dans buffer
         String message = new String(buffer); //crée un String à partir du buffer
         int nbGames = buffer[6]; //récupère le 6e caractère du buffer (le nombre de parties)
         System.out.println(message.substring(0, 6) + nbGames + message.substring(7)); //affiche le message
-        receiveOgame(nbGames, br);
+        receiveOgame(nbGames, br); //affiche toutes les parties
     }
 
     //recevoir les parties disponibles
@@ -65,16 +56,13 @@ public class Client {
 
     //recevoir message d'échec d'inscription
     //[REGNO***]
-    /*
     public void receiveRegno(BufferedReader br) throws Exception {
         char[] buffer = new char[8];
         br.read(buffer, 0, 8);
         String message = new String(buffer);
         System.out.println(message);
     }
-    */
 
-    //identique à receiveRegok()
     //recevoir message de confirmation de désinscription
     //[UNROK␣m***]
     public void receiveUnrok(BufferedReader br) throws Exception {
@@ -85,17 +73,14 @@ public class Client {
         System.out.println(message.substring(0, 6) + game + message.substring(7));
     }
 
-    //identique à receiveRegno()
     //recevoir message d'erreur
     //[DUNNO***]
-    /*
     public void receiveDunno(BufferedReader br) throws Exception {
         char[] buffer = new char[8];
         br.read(buffer, 0, 8);
         String message = new String(buffer);
         System.out.println(message);
     }
-     */
 
     //recevoir la taille du labyrinthe
     //[SIZE!␣m␣h␣w***]
@@ -104,25 +89,11 @@ public class Client {
         br.read(buffer, 0, 16);
         String message = new String(buffer);
         int game = buffer[6];
-        int height = buffer[8];
-        int height2 = buffer[9];
-        int width = buffer[11];
-        int width2 = buffer[12];
-        System.out.println(message.substring(0, 6) + game + message.charAt(7) + height + height2
-                + message.charAt(10) + width + width2 + message.substring(13));
-    }
-    /*
-    public void receiveSize(BufferedReader br) throws Exception {
-        char[] buffer = new char[14];
-        br.read(buffer, 0, 14);
-        String message = new String(buffer);
-        int game = buffer[6];
-        int height = buffer[8];
-        int width = buffer[10];
+        short height = (short) (buffer[8] + buffer[9]);
+        short width = (short) (buffer[11] + buffer[12]);
         System.out.println(message.substring(0, 6) + game + message.charAt(7) + height
-                + message.charAt(9) + width + message.substring(11));
+                + message.charAt(10) + width + message.substring(13));
     }
-    */
 
     //recevoir la liste des joueurs d'une partie
     //[LIST!␣m␣s***]
@@ -130,10 +101,10 @@ public class Client {
         char[] buffer = new char[12];
         br.read(buffer, 0, 12);
         String message = new String(buffer);
-        int game = buffer[6];
-        int nbPlayers = buffer[8];
-        System.out.println(message.substring(0, 6) + game + message.charAt(7) + nbPlayers + message.substring(9));
-        receivePlayr(nbPlayers, br);
+        int m = buffer[6];
+        int s = buffer[8];
+        System.out.println(message.substring(0, 6) + m + message.charAt(7) + s + message.substring(9));
+        receivePlayr(s, br);
     }
 
     //recevoir les joueurs d'une partie
@@ -154,30 +125,12 @@ public class Client {
         br.read(buffer, 0, 39);
         String message = new String(buffer);
         int game = buffer[6];
-        int height = buffer[8];
-        int height2 = buffer[9];
-        int width = buffer[11];
-        int width2 = buffer[12];
+        short height = (short) (buffer[8] + buffer[9]);
+        short width = (short) (buffer[11] + buffer[12]);
         int ghosts = buffer[14];
-        System.out.println(message.substring(0,6) + game + message.charAt(7) + height + height2
-        + message.charAt(10) + width + width2 + message.charAt(13) + ghosts + message.substring(15));
+        System.out.println(message.substring(0,6) + game + message.charAt(7) + height
+        + message.charAt(10) + width + message.charAt(13) + ghosts + message.substring(15));
     }
-    /*
-    public void receiveWelco(BufferedReader br) throws Exception {
-        char[] buffer = new char[20];
-        br.read(buffer, 0, 20);
-        String message = new String(buffer);
-        int game = buffer[6];
-        int height = buffer[8];
-        int width = buffer[10];
-        int ghosts = buffer[12];
-        int ip = buffer[14];
-        int port = buffer[16];
-        System.out.println(message.substring(0, 6) + game + message.charAt(7) + height + message.charAt(9)
-                + width + message.charAt(11) + ghosts + message.charAt(13) + ip + message.charAt(15)
-                + port + message.substring(17));
-    }
-    */
 
     //recevoir position dans le labyrinthe
     //[POSIT␣id␣x␣y***]
@@ -187,20 +140,8 @@ public class Client {
         String message = new String(buffer);
         System.out.println(message);
     }
-    /*
-    public void receivePosit(BufferedReader br) throws Exception {
-        char[] buffer = new char[14];
-        br.read(buffer, 0, 14);
-        String message = new String(buffer);
-        int id = buffer[6];
-        int x = buffer[8];
-        int y = buffer[10];
-        System.out.println(message.substring(0, 6) + id + message.charAt(7) + x + message.charAt(9)
-                + y + message.substring(11));
-    }
-    */
 
-    //recevoir conformation de déplacement si on n'a pas rencontré de fantômes
+    //recevoir confirmation de déplacement si on n'a pas rencontré de fantômes
     //[MOVE!␣x␣y***]
     public void receiveMove(BufferedReader br) throws Exception {
         char[] buffer = new char[20];
@@ -209,7 +150,7 @@ public class Client {
         System.out.println(message);
     }
 
-    //recevoir le nombre de points et le nouveau nombre de points
+    //recevoir la position et le nouveau nombre de points
     //[MOVEF␣x␣y␣p***]
     public void receiveMovef(BufferedReader br) throws Exception {
         char[] buffer = new char[16];
@@ -220,14 +161,12 @@ public class Client {
 
     //recevoir message d'au revoir
     //[GOBYE***]
-    /*
     public void receiveGobye(BufferedReader br) throws Exception {
         char[] buffer = new char[8];
         br.read(buffer, 0, 8);
         String message = new String(buffer);
         System.out.println(message);
     }
-     */
 
     //recevoir le nombre de joueurs présents dans la partie
     //[GLIS!␣s***]
@@ -253,36 +192,30 @@ public class Client {
 
     //recevoir confirmation de multi-diffusion
     //[MALL!***]
-    /*
     public void receiveMall(BufferedReader br) throws Exception {
         char[] buffer = new char[8];
         br.read(buffer, 0, 8);
         String message = new String(buffer);
         System.out.println(message);
     }
-     */
 
     //recevoir confirmation d'envoi de message
     //[SEND!***]
-    /*
     public void receiveSend(BufferedReader br) throws Exception {
         char[] buffer = new char[8];
         br.read(buffer, 0, 8);
         String message = new String(buffer);
         System.out.println(message);
     }
-     */
 
-    //recevoir message de non envoie de message
+    //recevoir message de non envoi de message
     //[NSEND***]
-    /*
     public void receiveNsend(BufferedReader br) throws Exception {
         char[] buffer = new char[8];
         br.read(buffer, 0, 8);
         String message = new String(buffer);
         System.out.println(message);
     }
-     */
 
 
     //messages envoyés au serveur
@@ -427,7 +360,6 @@ public class Client {
         pw.print("SEND? " + id + " " + mess + "***");
         pw.flush();
     }
-
 
 
 
