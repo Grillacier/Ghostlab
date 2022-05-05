@@ -63,15 +63,34 @@ void *lobby(void* sock){
 	 }
      	 pthread_mutex_unlock(&verrou);
      	 while(1){
-     	 void *receiver = malloc(25);
+     	 void *receiver = malloc(24);
      	 if(recv(sock2,receiver,sizeof(char)*20 + sizeof(uint8_t),0) == 0){
      	 	perror("Cannot receive registration");
      	 	
      	 }
-     	 char request[5];
+     	 char request[6];
+     	 request[5] = '\0';
      	 memmove(&request,receiver,sizeof(char)*5);
+     	
      	 if(strcmp(request,"NEWPL") == 0){
-     	 	add(&list);
+     	 	char id [9];
+     	 	char p [5];
+     	 	memmove(&id,receiver+sizeof(char)*6,sizeof(char)*8);
+     	 	id[8] = '\0';
+     	 	memmove(&p,receiver+sizeof(char)*6,sizeof(char)*8);
+     	 	p[4] = '\0';
+     	 	
+     	 	
+     	 	printf("Creation of new game...");
+     	 	pthread_mutex_lock(&verrou);
+     	 	uint8_t nwgame = add(&list);
+     	 	threadList = list;
+     	 	addPlayerTo(threadList,nwgame,id,p);
+     	 	
+     	 	pthread_mutex_unlock(&verrou);
+     	 	
+     	 	
+     	 	
      	 	break;
      	 }
      	 else if(strcmp(request,"REGIS")){
@@ -80,7 +99,7 @@ void *lobby(void* sock){
      	 
      	 }
      	while(1){
-     	
+     		printf("DONE");
      	}
      }
      
