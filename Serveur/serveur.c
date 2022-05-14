@@ -10,7 +10,7 @@
 #include <time.h>
 #include <pthread.h>
 #include <stdint.h>
-#include "./includes/gameList.c"
+#include "../includes/gameList.c"
 
 //Variable global
 uint8_t nbgame = 0;
