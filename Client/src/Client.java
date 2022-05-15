@@ -26,7 +26,7 @@ public class Client {
         else {
         //demande son id à l'utilisateur
         Scanner name = new Scanner(System.in);
-        System.out.println("Enter your name: ");
+        System.out.println("Entrez votre nom : ");
         String id = name.nextLine() + "12345678";
         id = id.substring(0, 8);
 
@@ -38,7 +38,7 @@ public class Client {
                 DatagramSocket dso = new DatagramSocket(port);
 
                 Client client = new Client(id, args[1]);
-                client.getRequests().beforeGame(br, pw);
+                client.getRequests().game(br, pw, dso);
             } catch (Exception e) {
                 e.printStackTrace();
             }
