@@ -9,7 +9,7 @@
 #include <string.h>
 #include <time.h>
 #include <stdint.h>
-#include "../includes/gameList.c"
+
 
 int sendDunno(int sock){
 	char *buffer = "DUNNO***";
