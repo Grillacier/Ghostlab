@@ -19,11 +19,5 @@ public class Jeu {
        System.out.println("Bienvenue sur GhostLab, "+name+" !");
     }
 
-    public static void main(String[] args) {
-        Jeu j = new Jeu();
-        Configuration c = new Configuration(4, 4);
-        j.newGame();
-        System.out.println("Voici le labyrinthe : ");
-        c.afficheLabyrinthe();
-    }
+    //méthodes pour les règles du jeu
 }
