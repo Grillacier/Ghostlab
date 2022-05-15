@@ -21,6 +21,9 @@ public class Jeu {
 
     public static void main(String[] args) {
         Jeu j = new Jeu();
+        Configuration c = new Configuration(4, 4);
         j.newGame();
+        System.out.println("Voici le labyrinthe : ");
+        c.afficheLabyrinthe();
     }
 }
