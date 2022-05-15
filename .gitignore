@@ -1,5 +1,6 @@
 # Ces fichiers sont ignorés pendant les commits
 *.class
 
-# Ce fichier est crée quand on ouvre un fichier Java avec IntelliJ
+# Crées quand on ouvre un fichier Java avec IntelliJ
 stale_outputs_checked
+.idea/
