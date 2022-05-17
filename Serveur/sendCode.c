@@ -14,20 +14,20 @@
 int sendDunno(int sock){
 	char *buffer = "DUNNO***";
 	if (send(sock,buffer,strlen(buffer),0) == -1){
-		perror("Erreur DUNNO***");
+		perror("Erreur DUNNO***\n");
 		return 0;
 	}
-	printf("Ok DUNNO***");
+	printf("Ok DUNNO***\n");
 	return 1;
 }
 
 int sendRegno(int sock){
 	char *buffer = "REGNO***";
 	if (send(sock,buffer,strlen(buffer),0) == -1){
-		perror("Erreur REGNO***");
+		perror("Erreur REGNO***\n");
 		return 0;
 	}
-	printf("Ok REGNO***");
+	printf("Ok REGNO***\n");
 	return 1;
 }
 
@@ -40,10 +40,10 @@ int sendRegok(int sock, uint8_t id_game){
 	memcpy(buffer + strlen(buffer1),&be_id_game, sizeof(uint8_t));
 	memcpy(buffer + strlen(buffer1)+sizeof(uint8_t),buffer2, strlen(buffer2));
 	if (send(sock,buffer,sizeof(char)*9+sizeof(uint8_t),0) == -1){
-		perror("Erreur REGOK_m***");
+		perror("Erreur REGOK_m***\n");
 		return 0;
 	}
-	printf("Ok REGOK_m***");
+	printf("Ok REGOK_m***\n");
 	return 1;
 	
 }
@@ -57,10 +57,10 @@ int sendUnreg(int sock, uint8_t id_game){
 	memcpy(buffer + strlen(buffer1),&be_id_game, sizeof(uint8_t));
 	memcpy(buffer + strlen(buffer1)+sizeof(uint8_t),buffer2, strlen(buffer2));
 	if (send(sock,buffer,sizeof(char)*9+sizeof(uint8_t),0) == -1){
-		perror("Erreur UNREG_m***");
+		perror("Erreur UNREG_m***\n");
 		return 0;
 	}
-	printf("Ok UNREG_m***");
+	printf("Ok UNREG_m***\n");
 	return 1;
 }
 
@@ -73,10 +73,10 @@ int sendGames(int sock, uint8_t num_game){
 	memcpy(buffer + strlen(buffer1),&be_num_game, sizeof(uint8_t));
 	memcpy(buffer + strlen(buffer1)+sizeof(uint8_t),buffer2, strlen(buffer2));
 	if (send(sock,buffer,sizeof(char)*9+sizeof(uint8_t),0) == -1){
-		perror("Erreur GAMES_n***");
+		perror("Erreur GAMES_n***\n");
 		return 0;
 	}
-	printf("Ok GAMES_n***");
+	printf("Ok GAMES_n***\n");
 	return 1;
 
 }
@@ -95,10 +95,10 @@ int sendOgame(int sock, uint8_t id_game, uint8_t nb_player){
 	memcpy(buffer + strlen(buffer1)+sizeof(uint8_t)*2+sizeof(char),buffer2,strlen(buffer2));
 	
 	if (send(sock,buffer,sizeof(char)*9+sizeof(uint8_t),0) == -1){
-		perror("Erreur OGAME_***");
+		perror("Erreur OGAME_***\n");
 		return 0;
 	}
-	printf("Ok OGAME_***");
+	printf("Ok OGAME_***\n");
 	return 1;
 
 }
