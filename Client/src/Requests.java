@@ -29,33 +29,30 @@ public class Requests {
     //fonctions appelant les autres fonctions
     //fonctions avant le début de la partie
     public void beforeGame(BufferedReader br, PrintWriter pw) throws Exception {
+        System.out.println();
         receiveGames(br);
         boolean start = false; //le joueur n'est pas encore dans une partie
         boolean canStart = false;
         while (!start) {
-            System.out.println("Que voulez-vous faire ?");
+            System.out.println("Que voulez-vous faire ?\n");
             System.out.println("1. Créer une partie");
             System.out.println("2. Rejoindre une partie");
             System.out.println("3. Demander la liste des parties non commencées");
             System.out.println("4. Se désinscrire de la partie");
             System.out.println("5. Demander la taille du labyrinthe");
             System.out.println("6. Demander la liste des joueurs");
-            System.out.println("7. Commencer à jouer");
+            System.out.println("7. Commencer à jouer\n");
 
             Scanner sc = new Scanner(System.in);
             int choice = sc.nextInt();
             switch (choice) {
                 case 1:
                     newGame(pw);
-                    receiveRegok(br);
-                    canStart = true;
-                    receiveRegno(br);
+                    canStart = receiveReg(br);
                     break;
                 case 2:
                     joinGame(pw);
-                    receiveRegok(br);
-                    canStart = true;
-                    receiveRegno(br);
+                    canStart = receiveReg(br);
                     break;
                 case 3:
                     listGames(pw);
@@ -63,18 +60,15 @@ public class Requests {
                     break;
                 case 4:
                     unregister(pw);
-                    receiveUnrok(br);
-                    receiveDunno(br);
+                    canStart = receiveUnreg(br);
                     break;
                 case 5:
                     askSize(pw);
                     receiveSize(br);
-                    receiveDunno(br);
                     break;
                 case 6:
                     listPlayers(pw);
                     receiveList(br);
-                    receiveDunno(br);
                     break;
                 case 7:
                     if (canStart) {
@@ -82,29 +76,29 @@ public class Requests {
                         start = true;
                     }
                     else {
-                        System.out.println("Vous n'êtes pas dans une partie");
+                        System.out.println("Vous n'êtes pas dans une partie\n");
                     }
                     break;
                 default:
-                    System.out.println("Veuillez entrer un chiffre entre 1 et 7");
+                    System.out.println("Veuillez entrer un chiffre entre 1 et 7\n");
                     break;
             }
         }
     }
 
-    //ajouter cas où le client envoie un message après la fin de la partie
+    //TODO: ajouter cas où le client envoie un message après la fin de la partie
     //déroulement de la partie
     public void duringGame(BufferedReader br, PrintWriter pw) throws Exception {
         receiveWelco(br);
         receivePosit(br);
         boolean end = false;
         while (!end) {
-            System.out.println("Que voulez-vous faire ?");
+            System.out.println("Que voulez-vous faire ?\n");
             System.out.println("1. Se déplacer");
             System.out.println("2. Demander la liste des joueurs");
             System.out.println("3. Envoyer un message à tous les joueurs");
             System.out.println("4. Envoyer un message à un joueur");
-            System.out.println("5. Abandonner la partie");
+            System.out.println("5. Abandonner la partie\n");
 
             Scanner sc = new Scanner(System.in);
             int choice = sc.nextInt();
@@ -112,7 +106,6 @@ public class Requests {
                 case 1:
                     move(pw);
                     receiveMove(br);
-                    receiveMovef(br);
                     break;
                 case 2:
                     listPlayersOnline(pw);
@@ -125,7 +118,6 @@ public class Requests {
                 case 4:
                     sendMessageToPlayer(pw);
                     receiveSend(br);
-                    receiveNsend(br);
                     break;
                 case 5:
                     iquit(pw);
@@ -134,20 +126,9 @@ public class Requests {
                     end = true;
                     break;
                 default:
-                    System.out.println("Veuillez entrer un chiffre entre 1 et 5");
+                    System.out.println("Veuillez entrer un chiffre entre 1 et 5\n");
                     break;
             }
-        }
-    }
-
-
-    //messages multi-diffusés
-    public void multicast(DatagramSocket dso) throws Exception {
-        while (true) {
-            ghost(dso);
-            score(dso);
-            messa(dso);
-            endga(dso);
         }
     }
 
@@ -156,8 +137,7 @@ public class Requests {
         while (true) {
             beforeGame(br, pw);
             duringGame(br, pw);
-            multicast(dso);
-            messp(dso);
+            receiveUDP(dso);
         }
     }
 
@@ -189,10 +169,29 @@ public class Requests {
             System.out.println(message.substring(0, 6) + m + message.charAt(7) + nbPlayers + message.substring(9));
             System.out.println("Partie " + m + " : " + nbPlayers + " joueurs");
         }
+        System.out.println();
     }
 
-    //recevoir message de confirmation d'inscription
-    //[REGOK␣m***]
+    //recevoir message pour confirmer l'inscription ou non
+    //[REGOK␣m***] [REGNO***]
+    private boolean receiveReg(BufferedReader br) throws Exception {
+        char[] buffer = new char[10];
+        br.read(buffer, 0, 10);
+        String message = new String(buffer);
+        if (message.startsWith("REGOK")) {
+            int game = buffer[6];
+            System.out.println(message.substring(0, 6) + game + message.substring(7));
+            System.out.println("Vous êtes inscrit à la partie " + game + "\n");
+            return true;
+        }
+        else {
+            System.out.println(message);
+            System.out.println("Vous n'êtes pas inscrit à la partie\n");
+            return false;
+        }
+    }
+
+    /*
     private void receiveRegok(BufferedReader br) throws Exception {
         char[] buffer = new char[10];
         br.read(buffer, 0, 10);
@@ -211,20 +210,30 @@ public class Requests {
         System.out.println(message);
         System.out.println("Vous n'êtes pas inscrit à la partie");
     }
+     */
 
-    //recevoir message de confirmation de désinscription
-    //[UNROK␣m***]
-    private void receiveUnrok(BufferedReader br) throws Exception {
+    //recevoir message de confirmation de désinscription ou message d'échec
+    //[UNROK␣m***] [DUNNO***]
+    private boolean receiveUnreg(BufferedReader br) throws Exception {
         char[] buffer = new char[10];
         br.read(buffer, 0, 10);
         String message = new String(buffer);
-        int game = buffer[6];
-        System.out.println(message.substring(0, 6) + game + message.substring(7));
-        System.out.println("Vous êtes désinscrit de la partie " + game);
+        if (message.startsWith("UNROK")) {
+            int game = buffer[6];
+            System.out.println(message.substring(0, 6) + game + message.substring(7));
+            System.out.println("Vous êtes désinscrit de la partie " + game + "\n");
+            return false;
+        }
+        else {
+            System.out.println(message);
+            System.out.println("Vous n'êtes inscrit à aucune partie\n");
+            return true;
+        }
     }
 
     //recevoir message d'erreur
     //[DUNNO***]
+    /*
     private void receiveDunno(BufferedReader br) throws Exception {
         char[] buffer = new char[8];
         br.read(buffer, 0, 8);
@@ -232,32 +241,45 @@ public class Requests {
         System.out.println(message);
         System.out.println("Vous n'êtes inscrit à aucune partie");
     }
+    */
 
     //recevoir la taille du labyrinthe
-    //[SIZE!␣m␣h␣w***]
+    //[SIZE!␣m␣h␣w***] [DUNNO***]
     private void receiveSize(BufferedReader br) throws Exception {
         char[] buffer = new char[16];
         br.read(buffer, 0, 16);
         String message = new String(buffer);
+        if (message.startsWith("SIZE!")) {
         int game = buffer[6];
         short height = (short) (buffer[8] + buffer[9]);
         short width = (short) (buffer[11] + buffer[12]);
         System.out.println(message.substring(0, 6) + game + message.charAt(7) + height
                 + message.charAt(10) + width + message.substring(13));
-        System.out.println("La taille du labyrinthe est de " + height + "x" + width);
+        System.out.println("La taille du labyrinthe est de " + height + "x" + width + "\n");
+        }
+        else {
+            System.out.println(message);
+            System.out.println("Vous n'êtes inscrit à aucune partie\n");
+        }
     }
 
     //recevoir la liste des joueurs d'une partie
-    //[LIST!␣m␣s***]
+    //[LIST!␣m␣s***] [DUNNO***]
     private void receiveList(BufferedReader br) throws Exception {
         char[] buffer = new char[12];
         br.read(buffer, 0, 12);
         String message = new String(buffer);
-        int m = buffer[6];
-        int s = buffer[8];
-        System.out.println(message.substring(0, 6) + m + message.charAt(7) + s + message.substring(9));
-        System.out.println("Partie " + m + " : " + s + " joueurs");
-        receivePlayr(s, br);
+        if (message.startsWith("LIST!")) {
+            int m = buffer[6];
+            int s = buffer[8];
+            System.out.println(message.substring(0, 6) + m + message.charAt(7) + s + message.substring(9));
+            System.out.println("Partie " + m + " : " + s + " joueurs");
+            receivePlayr(s, br);
+        }
+        else {
+            System.out.println(message);
+            System.out.println("Vous n'êtes inscrit à aucune partie\n");
+        }
     }
 
     //recevoir les joueurs d'une partie
@@ -270,6 +292,7 @@ public class Requests {
             System.out.println(message);
             System.out.println("Joueur " + nbPlayers+1 + " : " + message.substring(7));
         }
+        System.out.println();
     }
 
     //recevoir le message de début de partie
@@ -287,7 +310,7 @@ public class Requests {
         System.out.println("Bienvenue.\nLa partie " + game + " a commencé avec " + ghosts + " fantômes");
         System.out.println("La taille du labyrinthe est de " + height + "x" + width);
         System.out.println("Adresse de multi-diffusion de la partie : " + message.substring(16, 32));
-        System.out.println("Port de multi-diffusion de la partie : " + message.substring(33, 37));
+        System.out.println("Port de multi-diffusion de la partie : " + message.substring(33, 37) + "\n");
     }
 
     //recevoir position dans le labyrinthe
@@ -298,22 +321,27 @@ public class Requests {
         String message = new String(buffer);
         System.out.println(message);
         System.out.println("Joueur " + message.substring(6, 15) + " est à la position (" + message.substring(15, 18)
-                        + "," + message.substring(19, 22) + ")");
+                        + "," + message.substring(19, 22) + ")\n");
     }
 
     //recevoir confirmation de déplacement si on n'a pas rencontré de fantômes
-    //[MOVE!␣x␣y***]
+    //[MOVE!␣x␣y***] [MOVEF␣x␣y␣p***]
     private void receiveMove(BufferedReader br) throws Exception {
-        char[] buffer = new char[20];
-        br.read(buffer, 0, 20);
+        char[] buffer = new char[21];
+        br.read(buffer, 0, 21);
         String message = new String(buffer);
         System.out.println(message);
         System.out.println("Vous êtes maintenant à la position (" + message.substring(6, 9) + ","
                 + message.substring(10, 13) + ")");
+        if (message.startsWith("MOVEF")) {
+            System.out.println("Vous avez " + message.substring(14, 18) + " points");
+        }
+        System.out.println();
     }
 
     //recevoir la position et le nouveau nombre de points
     //[MOVEF␣x␣y␣p***]
+    /*
     private void receiveMovef(BufferedReader br) throws Exception {
         char[] buffer = new char[21];
         br.read(buffer, 0, 21);
@@ -323,6 +351,7 @@ public class Requests {
                 + message.substring(10, 13) + ")");
         System.out.println("Vous avez " + message.substring(14, 18) + " points");
     }
+     */
 
     //recevoir message d'au revoir
     //[GOBYE***]
@@ -354,10 +383,11 @@ public class Requests {
             br.read(buffer, 0, 30);
             String message = new String(buffer);
             System.out.println(message);
-            System.out.println("Joueur " + message.substring(6, 15) + " est à la position (" + message.substring(16, 19)
-                    + "," + message.substring(20, 23) + ")");
-            System.out.println("Il a " + message.substring(24, 28) + " points");
+            System.out.println("Joueur " + message.substring(6, 14) + " est à la position (" + message.substring(15, 18)
+                    + "," + message.substring(19, 22) + ")");
+            System.out.println("Il a " + message.substring(23, 27) + " points");
         }
+        System.out.println();
     }
 
     //recevoir confirmation de multi-diffusion
@@ -367,21 +397,27 @@ public class Requests {
         br.read(buffer, 0, 8);
         String message = new String(buffer);
         System.out.println(message);
-        System.out.println("Votre message a bien été multi-diffusé");
+        System.out.println("Votre message a bien été multi-diffusé\n");
     }
 
-    //recevoir confirmation d'envoi de message
-    //[SEND!***]
+    //recevoir confirmation d'envoi de message ou non
+    //[SEND!***] [NSEND***]
     private void receiveSend(BufferedReader br) throws Exception {
         char[] buffer = new char[8];
         br.read(buffer, 0, 8);
         String message = new String(buffer);
         System.out.println(message);
-        System.out.println("Votre message a bien été envoyé");
+        if (message.startsWith("SEND")) {
+            System.out.println("Votre message a bien été envoyé\n");
+        }
+        else {
+            System.out.println("Votre message n'a pas pu être envoyé\n");
+        }
     }
 
     //recevoir message de non envoi de message
     //[NSEND***]
+    /*
     private void receiveNsend(BufferedReader br) throws Exception {
         char[] buffer = new char[8];
         br.read(buffer, 0, 8);
@@ -389,6 +425,7 @@ public class Requests {
         System.out.println(message);
         System.out.println("Votre message n'a pas pu être envoyé");
     }
+     */
 
 
     //messages envoyés au serveur
@@ -537,6 +574,22 @@ public class Requests {
 
 
     //UDP
+    //recevoir un message UDP
+    private void receiveUDP(DatagramSocket dso) throws Exception {
+        byte[] data = new byte[218];
+        DatagramPacket paquet = new DatagramPacket(data, data.length);
+        dso.receive(paquet);
+        String message = new String(paquet.getData(), 0, paquet.getLength());
+        if (message.startsWith("MESSP")) {
+            InetSocketAddress id = (InetSocketAddress) paquet.getSocketAddress();
+            System.out.println(message.substring(0,6) + id.getHostName() + message.substring(14) + "\n");
+        }
+        else {
+            System.out.println(message + "\n");
+        }
+    }
+
+    /*
     //recevoir la nouvelle position d'un fantôme qui s'est déplacé
     //[GHOST␣x␣y+++]
     private void ghost(DatagramSocket dso) throws Exception {
@@ -587,4 +640,5 @@ public class Requests {
         String message = new String(paquet.getData(), 0, paquet.getLength());
         System.out.println(message.substring(0,6) + id.getHostName() + message.substring(14));
     }
+    */
 }

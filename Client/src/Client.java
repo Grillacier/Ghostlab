@@ -38,7 +38,19 @@ public class Client {
                 DatagramSocket dso = new DatagramSocket(port);
 
                 Client client = new Client(id, args[1]);
-                client.getRequests().game(br, pw, dso);
+
+                Runnable r = new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            client.getRequests().game(br, pw, dso);
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                };
+                Thread t = new Thread(r);
+                t.start();
             } catch (Exception e) {
                 e.printStackTrace();
             }
