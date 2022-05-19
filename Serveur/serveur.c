@@ -21,20 +21,26 @@ Gamelist *list = NULL;
 //Verrou
 pthread_mutex_t verrou = PTHREAD_MUTEX_INITIALIZER;
 
-int chooseGame(int sock, char * receiver) {
-    //while (1) {
-        //void *receiver = malloc(24);
+int chooseGame(int sock,char *ur_id) {
+    while (1) {
+        char receiver [100];
         Gamelist *threadList = list;
-
-       /* if (recv(sock, receiver, sizeof(char) * 20 + sizeof(uint8_t), 0) == 0) {
-            perror("Cannot receive registration");
-        }*/
+	int r = recv(sock, receiver, sizeof(char) * 20 + sizeof(uint8_t), 0);
+        if (r > 0) {
+            perror("End of connexion");
+            return -1;
+        }
+        if (r == 0) {
+            perror("CHOOSEGAME: No sended data");
+            return 0;
+        }
 
 
         char request[6];
         memmove(&request, receiver, sizeof(char) * 5);
         request[5] = '\0';
         if (strncmp(receiver, "NEWPL",5) == 0) {
+            printf("CHOOSEGAME: NEWPL request");
             char id[9];
             memmove(&id, receiver + sizeof(char) * 6, sizeof(char) * 8);
             id[8] = '\0';
@@ -49,7 +55,8 @@ int chooseGame(int sock, char * receiver) {
             addPlayerTo(threadList, nwgame, id, p);
 
             pthread_mutex_unlock(&verrou);
-            if (nwgame != 0) {
+            if (nwgame > 0) {
+            	memcpy(ur_id,&id,sizeof(char)*8);
                 sendRegok(sock, nwgame);
                 return 1;
             }
@@ -62,10 +69,10 @@ int chooseGame(int sock, char * receiver) {
             memmove(&id, receiver + sizeof(char) * 6, sizeof(char) * 8);
             id[8] = '\0';
             char p[5];
-            memmove(&p, receiver + sizeof(char) * 16, sizeof(char) * 4);
+            memmove(&p, receiver + sizeof(char) * 15, sizeof(char) * 4);
             p[4] = '\0';
             uint8_t id_game = 0;
-            memmove(&id_game, receiver + sizeof(char) * 21, sizeof(uint8_t));
+            memmove(&id_game, receiver + sizeof(char) * 20, sizeof(uint8_t));
             pthread_mutex_lock(&verrou);
             if (addPlayerTo(threadList, id_game, id, p) == 0) {
                 sendRegno(sock);
@@ -76,7 +83,7 @@ int chooseGame(int sock, char * receiver) {
             return id_game;
         }
 
-   // }
+    }
 
 }
 
@@ -84,7 +91,8 @@ void *lobby(void *sock) {
     // Variable de thread
     int sock2 = *(int *) sock;
     uint8_t ur_game_id = 0;
-    char ur_id[8];
+    char ur_id[9];
+    ur_id[8] = '\n';
     // ------
     pthread_mutex_lock(&verrou);
     if (sendGames(sock2, nbgame) == 0) {
@@ -96,34 +104,20 @@ void *lobby(void *sock) {
         sendOgame(sock2, threadList->num, threadList->nb_player);
         threadList = threadList->next;
     }
-
     pthread_mutex_unlock(&verrou);
-    char receiver[100];
-    while (1) {
-        int rec = recv(sock2, receiver, 99, 0);
-        if ( rec == 0) {
-            perror("Cannot receive registration");
+    
+    
+    while(1){
 
-        }
-        receiver[rec] = '\0';
-        if(strncmp(receiver, "NEWPL", 5)==0) {
-            ur_game_id = chooseGame(sock2, receiver);
-            if (ur_game_id != 0) {
+            ur_game_id = chooseGame(sock2,ur_id); // ur_game_id == 0 : pas de partie, <0 : fin de transmission ,>0 :inscrit
+            if (ur_game_id > 0) {
                 printf(" Vous etes inscrit, TODO");
             }
             else {
                 printf("Vous n'etes pas inscrit");
             }
-        }else if(strncmp(receiver, "UNREG", 5)==0){
-            //TODO: le reste
-        }
 
-        /*
-        while (ur_game_id != 0) {
-            printf(" Vous etes inscrit, TODO");
-        }
-        printf("Vous n'etes pas inscrit");
-         */
+       
     }
 }
 
