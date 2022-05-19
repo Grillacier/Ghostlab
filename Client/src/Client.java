@@ -19,8 +19,11 @@ public class Client {
     }
 
     public static void main(String[] args) {
-        if (args.length != 3) {
-            System.out.println("Usage: java Client <host> <portUDPClient> <portTCP>");
+        if (args.length != 4) {
+            System.out.println("Usage: java Client <host> <portUDPClient> <portTCP> <y/n>");
+            System.out.println("<p/r> : p : afficher les messages sous forme de phrases");
+            System.out.println("<p/r> : r : afficher les messages sous forme de requêtes");
+            System.exit(1);
         }
 
         else {
@@ -35,22 +38,21 @@ public class Client {
                 Socket socket = new Socket(args[0], port);
                 BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 PrintWriter pw = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
-                DatagramSocket dso = new DatagramSocket(port);
+                DatagramSocket dso = new DatagramSocket(Integer.parseInt(args[1]));
 
                 Client client = new Client(id, args[1]);
+                if (args[3].equalsIgnoreCase("p"))
+                    client.getRequests().setShow(true);
+                else if (args[3].equalsIgnoreCase("r"))
+                    client.getRequests().setShow(false);
+                else {
+                    System.out.println("p : afficher les messages sous forme de phrases");
+                    System.out.println("r : afficher les messages sous forme de requêtes");
+                    System.exit(1);
+                }
 
-                Runnable r = new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            client.getRequests().game(br, pw, dso);
-                        } catch (Exception e) {
-                            throw new RuntimeException(e);
-                        }
-                    }
-                };
-                Thread t = new Thread(r);
-                t.start();
+                client.getRequests().game(br, pw, dso);
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
