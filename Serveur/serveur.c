@@ -14,24 +14,66 @@
 #include "sendCode.c"
 
 //Variable global
-uint8_t nbgame = 0;
+
 Gamelist *list = NULL;
 
 
 //Verrou
 pthread_mutex_t verrou = PTHREAD_MUTEX_INITIALIZER;
 
-int chooseGame(int sock,char *ur_id) {
+int prepareGame(int sock, char *ur_id, uint8_t ur_game_id){
+	while(1){
+		char receiver [100];
+		 Gamelist *threadList = list;
+		 int r = recv(sock, receiver, sizeof(char) * 20 + sizeof(uint8_t), 0);
+		 if (r > 0) {
+            		perror("CHOOSEGAME:End of connexion \n");
+            		return -1;
+        }
+        	if (r == 0) {
+            		perror("CHOOSEGAME: No sended data \n");
+            		return 0;
+        }
+        	char request[6];
+        	memmove(&request, receiver, sizeof(char) * 5);
+        	request[5] = '\0';
+        
+		if (strncmp(receiver, "START",5) == 0) {
+			if(imReady(threadList , ur_game_id) != 0){
+				return 2;
+			}
+		}
+		if (strncmp(receiver, "UNREG",5) == 0) {
+			rmvPlayer(threadList, ur_game_id, ur_id);
+			return 1;
+		}
+		if (strncmp(receiver, "NEWPL",5) == 0) {
+		
+		}
+		if (strncmp(receiver, "NEWPL",5) == 0) {
+		
+		}
+		if (strncmp(receiver, "NEWPL",5) == 0) {
+		
+		}
+		if (strncmp(receiver, "NEWPL",5) == 0) {
+		
+		}
+	
+	}
+}
+
+int chooseGame(int sock,char *ur_id) { // TODO: Ajoutez les options supplémentaires
     while (1) {
         char receiver [100];
         Gamelist *threadList = list;
 	int r = recv(sock, receiver, sizeof(char) * 20 + sizeof(uint8_t), 0);
         if (r > 0) {
-            perror("End of connexion");
+            perror("CHOOSEGAME:End of connexion \n");
             return -1;
         }
         if (r == 0) {
-            perror("CHOOSEGAME: No sended data");
+            perror("CHOOSEGAME: No sended data \n");
             return 0;
         }
 
@@ -49,7 +91,7 @@ int chooseGame(int sock,char *ur_id) {
             p[4] = '\0';
 
             Gamelist *threadList = list;
-            printf("Creation of new game...");
+            printf(" Creation of new game... \n");
             pthread_mutex_lock(&verrou);
             uint8_t nwgame = add(&list);
             addPlayerTo(threadList, nwgame, id, p);
@@ -87,6 +129,30 @@ int chooseGame(int sock,char *ur_id) {
 
 }
 
+int listGame (int sock){
+	pthread_mutex_lock(&verrou);
+	Gamelist *threadList = list;
+	
+    	if (sendGames(sock,length(threadList)) == 0) {
+        perror("LISTGAME: cannot sendGames");
+        return 0;
+    	}
+    	
+
+    while (threadList != NULL) {
+    	if(threadList -> started != -1){
+        	if(sendOgame(sock, threadList->num, threadList->nb_player) == 0){
+        		 perror("LISTGAME: cannot sendOGame");
+        		return 0;
+        	}
+        }
+        threadList = threadList->next;
+    }
+    pthread_mutex_unlock(&verrou);
+    return 1;
+
+}
+
 void *lobby(void *sock) {
     // Variable de thread
     int sock2 = *(int *) sock;
@@ -94,31 +160,36 @@ void *lobby(void *sock) {
     char ur_id[9];
     ur_id[8] = '\n';
     // ------
-    pthread_mutex_lock(&verrou);
-    if (sendGames(sock2, nbgame) == 0) {
-        printf("ERREUR");
+    
+    if(listGame(sock2) == 0){
+    	perror(" SERVEUR: Cannot send the list of game \n");
     }
-    Gamelist *threadList = list;
-
-    while (threadList != NULL) {
-        sendOgame(sock2, threadList->num, threadList->nb_player);
-        threadList = threadList->next;
-    }
-    pthread_mutex_unlock(&verrou);
     
     
     while(1){
 
             ur_game_id = chooseGame(sock2,ur_id); // ur_game_id == 0 : pas de partie, <0 : fin de transmission ,>0 :inscrit
-            if (ur_game_id > 0) {
-                printf(" Vous etes inscrit, TODO");
+            if(ur_game_id == -1){
+            	close(sock2);
             }
-            else {
-                printf("Vous n'etes pas inscrit");
+            while (ur_game_id > 0) {
+            	
+                printf(" Vous etes inscrit, preparez vous! \n");
+                int status = prepareGame(sock2,ur_id, ur_game_id);
+                if(status == 1){
+                	ur_game_id = 0;
+                	printf("Vous allez retourner au lobby \n");
+                }
+                while(status ==2){
+                	printf("Vous etes pret! \n");
+                }
+            }
+
+            printf("Vous n'etes pas/ plus inscrit");
             }
 
        
-    }
+    
 }
 
 
