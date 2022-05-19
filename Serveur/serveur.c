@@ -27,15 +27,15 @@ int prepareGame(int sock, char *ur_id, uint8_t ur_game_id){
 		 Gamelist *threadList = list;
 		 int r = recv(sock, receiver, sizeof(char) * 20 + sizeof(uint8_t), 0);
 		 if (r > 0) {
-            		perror("CHOOSEGAME:End of connexion \n");
+            		perror("PREPARE:End of connexion \n");
             		return -1;
         }
         	if (r == 0) {
-            		perror("CHOOSEGAME: No sended data \n");
+            		perror("PREPARE: No sended data \n");
             		return 0;
         }
         	char request[6];
-        	memmove(&request, receiver, sizeof(char) * 5);
+        	memmove(request, receiver, sizeof(char) * 5);
         	request[5] = '\0';
         
 		if (strncmp(receiver, "START",5) == 0) {
@@ -47,8 +47,14 @@ int prepareGame(int sock, char *ur_id, uint8_t ur_game_id){
 			rmvPlayer(threadList, ur_game_id, ur_id);
 			return 1;
 		}
-		if (strncmp(receiver, "NEWPL",5) == 0) {
-		
+		if (strncmp(receiver, "SIZE?",5) == 0) {
+			uint8_t n_p = 0;
+			memcpy(&n_p,receiver + sizeof(char)*6,sizeof(uint8_t));
+			if(sendSize(sock,n_p) == 0){
+				printf("PREPARE: Error size \n");
+				return 0;
+			}
+			
 		}
 		if (strncmp(receiver, "NEWPL",5) == 0) {
 		

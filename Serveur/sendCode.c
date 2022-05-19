@@ -10,6 +10,32 @@
 #include <time.h>
 #include <stdint.h>
 
+int sendSize(int sock, uint8_t ngame){
+
+	uint8_t v_lt[2];
+	v_lt[0] = 20;
+	v_lt[1] = 0;
+	
+	char buffer[17];
+	char *size = "SIZE! ";
+	buffer[8] = ' ';
+	buffer[11] = ' ';
+	buffer[13] = '*';
+	buffer[14] = '*';
+	buffer[15] = '*';
+	buffer[17] = '\n';
+	memcpy(buffer, size, sizeof(char)*6);
+	memcpy(buffer+sizeof(char)*6, &ngame, sizeof(uint8_t));
+	memcpy(buffer+sizeof(char)*8, &v_lt, sizeof(uint16_t));
+	memcpy(buffer+sizeof(char)*11, &v_lt, sizeof(uint16_t));
+	if(send(sock,buffer,strlen(buffer),0) == 0){
+		perror("SENDSIZE: Cannot send");
+		return 0;
+	}
+	
+	return 1;
+
+}
 
 int sendDunno(int sock){
 	char *buffer = "DUNNO***";
