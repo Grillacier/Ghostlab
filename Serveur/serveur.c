@@ -21,6 +21,33 @@ Gamelist list [100];
 //Verrou
 pthread_mutex_t verrou = PTHREAD_MUTEX_INITIALIZER;
 
+int listGame (int sock){
+	pthread_mutex_lock(&verrou);
+	
+    	if (sendGames(sock,length(list)) == 0) {
+        perror("LISTGAME: cannot sendGames");
+        return 0;
+    	}
+    	
+
+    for(int i = 0; i<100;i++) {
+    	
+    	if(list[i].create == 1){
+    		uint8_t u_int = i;
+    		printf("%d  ", i );
+    		 printf("NB player test: %d \n", getNbPlayer(list[i]));
+        	if(sendOgame(sock, u_int, getNbPlayer(list[i])) == 0){
+        		 perror("LISTGAME: cannot sendOGame");
+        		return 0;
+        	}
+        }
+        
+    } 
+    pthread_mutex_unlock(&verrou);
+    return 1;
+
+}
+
 
 /*int prepareGame(int sock, char *ur_id, uint8_t ur_game_id){
 	while(1){
@@ -69,7 +96,7 @@ pthread_mutex_t verrou = PTHREAD_MUTEX_INITIALIZER;
 	}
 }
  */
-uint8_t chooseGame(int sock,char *ur_id) { // TODO: Ajoutez les options supplémentaires
+int chooseGame(int sock,char *ur_id) { // TODO: Ajoutez les options supplémentaires
     while (1) {
         char receiver [100];
 	int r = recv(sock, receiver, sizeof(char) * 20 + sizeof(uint8_t), 0);
@@ -79,13 +106,57 @@ uint8_t chooseGame(int sock,char *ur_id) { // TODO: Ajoutez les options supplém
         }
         if (r == 0) {
             perror("CHOOSEGAME: No sended data \n");
-            return 0;
+            return -1;
         }
 
 
         char request[6];
         memmove(&request, receiver, sizeof(char) * 5);
         request[5] = '\0';
+        
+        
+        if (strncmp(receiver, "LIST?",5) == 0) {
+        	uint8_t num_game = -1;
+        	memmove(&num_game,receiver + sizeof(char)*6,sizeof(uint8_t));
+        	if(num_game < 0 || num_game>99){
+        		sendDunno(sock);
+        		return -1;
+        	}
+        	pthread_mutex_lock(&verrou);
+        	if(isCreate(list[num_game]) == 0){
+        		pthread_mutex_unlock(&verrou);
+        		sendDunno(sock);
+        		
+        		return -1;
+        	}
+        	
+        	uint8_t nb_player = getNbPlayer(list[num_game]);
+        	if(sendList(sock,num_game,nb_player) == 0){
+        		perror("CHOOSEGAME: Cannot send pList \n");
+        		pthread_mutex_unlock(&verrou);
+        		return -1;
+        	}
+        	for(int i = 0; i<5; i++){
+        		if(list[num_game].player_list[i].place == 1){
+        		if(sendPlayr(sock,list[num_game].player_list[i].id)== 0){
+        			perror("CHOOSEGAME: Cannot send Playr \n");
+        			pthread_mutex_unlock(&verrou);
+        			return -1 ;
+        			}
+        		}
+        	}
+        	pthread_mutex_unlock(&verrou);
+        	return -1;
+        
+        }
+        if (strncmp(receiver, "GAME?",5) == 0) {
+        	printf("CHOOSEGAME: GAMES? request \n");
+        	if(listGame(sock) == 0){
+        		perror("CHOOSEGAME:Cannot send list \n");
+        		return -1;
+        	}
+        	return -1;
+        }
         if (strncmp(receiver, "NEWPL",5) == 0) {
             printf("CHOOSEGAME: NEWPL request");
             char id[9];
@@ -95,31 +166,32 @@ uint8_t chooseGame(int sock,char *ur_id) { // TODO: Ajoutez les options supplém
             memmove(&p, receiver + sizeof(char) * 15, sizeof(char) * 4);
             p[4] = '\0';
 
-           
-            printf(" Creation of new game... \n");
             pthread_mutex_lock(&verrou);
             
             
             uint8_t nwgame = findRoom(list);
+            printf("NEWGAME Pre ID: %u \n",nwgame);
             printf("%u \n",nwgame);
             list[nwgame] = create(list[nwgame]);
             int isplace = findPlace(list[nwgame].player_list);
             printf("place: %d \n",isplace);
             if(isplace ==-1){
             	sendRegno(sock);
-            	return 0;
+            	pthread_mutex_unlock(&verrou);
+            	return -1;
             }
             list[nwgame].player_list[isplace] = addPlayer(list[nwgame].player_list[isplace],id,p);
             
 
             pthread_mutex_unlock(&verrou);
             if (nwgame > -1) {
-            	strcpy(ur_id, id);
+            	memcpy(ur_id,&id,sizeof(char)*8);
+            	printf("NEWGAME ID: %u \n",nwgame);
                 sendRegok(sock, nwgame);
                 return nwgame;
             }
             sendRegno(sock);
-            return 0;
+            return -1;
 
 
         }   else if (strncmp(request, "REGIS",5)==0) {
@@ -136,18 +208,19 @@ uint8_t chooseGame(int sock,char *ur_id) { // TODO: Ajoutez les options supplém
             if(check == 0){
             	perror("CHOOSEGAME: Partie non créer");
             	sendRegno(sock);
-            	return 0;
+            	pthread_mutex_unlock(&verrou);
+            	return -1;
             }
             int isplace = findPlace(list[id_game].player_list);
             printf("place: %d \n",isplace);
             if(isplace ==-1){
             	sendRegno(sock);
-            	return 0;
+            	pthread_mutex_unlock(&verrou);
+            	return -1;
             }
             list[id_game].player_list[isplace] = addPlayer(list[id_game].player_list[isplace],id,p);
 	    
             pthread_mutex_unlock(&verrou);
-            strcpy(ur_id, id);
             sendRegok(sock, id_game);
             return id_game;
         } 
@@ -156,40 +229,16 @@ uint8_t chooseGame(int sock,char *ur_id) { // TODO: Ajoutez les options supplém
 
 } 
 
-int listGame (int sock){
-	pthread_mutex_lock(&verrou);
-	
-//	printf("HERE2 %d \n",length(list));
-    	if (sendGames(sock,length(list)) == 0) {
-        perror("LISTGAME: cannot sendGames");
-        return 0;
-    	}
-    	
 
-    for(int i = 0; i<100;i++) {
-    	
-    	if(list[i].create == 1){
-    		uint8_t u_int = i;
-        	if(sendOgame(sock, u_int, getNbPlayer(list[i]) == 0)){
-        		 perror("LISTGAME: cannot sendOGame");
-        		return 0;
-        	}
-        }
-        
-    } 
-    pthread_mutex_unlock(&verrou);
-    return 1;
-
-}
  
 void *lobby(void *sock) {
     // Variable de thread
     int sock2 = *(int *) sock;
-    uint8_t ur_game_id = 0;
+    uint8_t ur_game_id = -1;
     char ur_id[9];
     ur_id[8] = '\n';
     // ------
-    
+   
         if(listGame(sock2) == 0){
     	perror(" SERVEUR: Cannot send the list of game \n");
     }
@@ -198,11 +247,12 @@ void *lobby(void *sock) {
     while(1){
 
             ur_game_id = chooseGame(sock2,ur_id); // ur_game_id == 0 : pas de partie, <0 : fin de transmission ,>0 :inscrit
-            if(ur_game_id == -1){
+            if(ur_game_id == -2){ // traiter erreur
+            	printf("Close sock\n");
             	close(sock2);
             }
-            printf("NB: %u \n",getNbPlayer(list[0]));
-            while (ur_game_id > 0) {
+            printf("id??? %u \n",ur_game_id);
+            while (ur_game_id < 100) {
             	
                 //printf(" Vous etes inscrit! \n");
                /* int status = prepareGame(sock2,ur_id, ur_game_id);
@@ -215,7 +265,7 @@ void *lobby(void *sock) {
                 } */
             } 
 
-            printf("Vous n'etes pas/ plus inscrit");
+           // printf("Vous n'etes pas/ plus inscrit");
             } 
 
        }
@@ -242,12 +292,12 @@ int main(int argc, char* argv[]){
    		
    	}
     if (r == 0) {
-    printf("%d \n", getNbPlayer(list[17]));
         r = listen(sock, 0);
         while (1) {
             struct sockaddr_in caller;
             socklen_t size = sizeof(caller);
             int *sock2 = (int *) malloc(sizeof(int));
+             
             *sock2 = accept(sock, (struct sockaddr *) &caller, &size);
             pthread_t th;
             pthread_create(&th, NULL, lobby, (void *) sock2);
