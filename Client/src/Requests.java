@@ -319,8 +319,10 @@ public class Requests {
         String message = new String(buffer);
         if (message.startsWith("SIZE!")) {
             int game = buffer[6];
-            short height = (short) (buffer[8] + buffer[9]);
-            short width = (short) (buffer[11] + buffer[12]);
+            short height = (short) ((buffer[8] & 0xff) << 8 | (buffer[9] & 0xff));
+            short width = (short) ((buffer[8] & 0xff) << 8 | (buffer[9] & 0xff));
+            //short height = (short) (buffer[8] + buffer[9]);
+            //short width = (short) (buffer[11] + buffer[12]);
             if (this.show)
                 System.out.println("La taille du labyrinthe est de " + height + "x" + width);
             else
@@ -380,8 +382,10 @@ public class Requests {
         br.read(buffer, 0, 39);
         String message = new String(buffer);
         int game = buffer[6];
-        short height = (short) (buffer[8] + buffer[9]);
-        short width = (short) (buffer[11] + buffer[12]);
+        short height = (short) ((buffer[8] & 0xff) << 8 | (buffer[9] & 0xff));
+        short width = (short) ((buffer[8] & 0xff) << 8 | (buffer[9] & 0xff));
+        //short height = (short) (buffer[8] + buffer[9]);
+        //short width = (short) (buffer[11] + buffer[12]);
         int ghosts = buffer[14];
 
         if (this.show) {
