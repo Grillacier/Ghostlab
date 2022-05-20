@@ -172,29 +172,43 @@ public class Requests {
             Scanner sc = new Scanner(System.in);
             int choice = sc.nextInt();
 
-            if (this.endGame) {
-                //System.out.println("endGame = true");
-                receiveGobye(br);
-                //System.out.println("endGame = true");
-            }
-            //System.out.println("endGame = false");
-
             switch (choice) {
                 case 1:
                     move(pw);
-                    receiveMove(br);
+                    if (this.endGame) {
+                        receiveGobye(br);
+                        end = true;
+                    }
+                    else {
+                        receiveMove(br);
+                    }
                     break;
                 case 2:
                     listPlayersOnline(pw);
-                    receiveGlis(br);
+                    if (this.endGame) {
+                        receiveGobye(br);
+                        end = true;
+                    }
+                    else
+                        receiveGlis(br);
                     break;
                 case 3:
                     sendMessage(pw);
-                    receiveMall(br);
+                    if (this.endGame) {
+                        receiveGobye(br);
+                        end = true;
+                    }
+                    else
+                        receiveMall(br);
                     break;
                 case 4:
                     sendMessageToPlayer(pw);
-                    receiveSend(br);
+                    if (this.endGame) {
+                        receiveGobye(br);
+                        end = true;
+                    }
+                    else
+                        receiveSend(br);
                     break;
                 case 5:
                     iquit(pw);
