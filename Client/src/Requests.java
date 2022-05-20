@@ -8,6 +8,7 @@ import java.util.Scanner;
 
 public class Requests {
     private boolean show = true;
+    private boolean end = false;
     private String id; //str de 8 char
     private String port; //port UDP du client
     private String ipMulticast;
@@ -16,6 +17,11 @@ public class Requests {
     public boolean getShow() {
         return show;
     }
+
+    public boolean getEnd() {
+        return end;
+    }
+
     public String getId() {
         return id;
     }
@@ -34,6 +40,10 @@ public class Requests {
 
     public void setShow(boolean show) {
         this.show = show;
+    }
+
+    public void setEnd(boolean end) {
+        this.end = end;
     }
 
     public void setId(String id) {
@@ -153,6 +163,9 @@ public class Requests {
 
             Scanner sc = new Scanner(System.in);
             int choice = sc.nextInt();
+            if (this.end)
+                receiveGobye(br);
+
             switch (choice) {
                 case 1:
                     move(pw);
@@ -671,6 +684,7 @@ public class Requests {
                 System.out.println();
             } else if (message.startsWith("ENDGA")) {
                 //[ENDGA␣id␣p+++]
+                setEnd(true);
                 if (this.show)
                     System.out.println("Le joueur " + message.substring(6,14)
                             + " a gagné avec " + message.substring(15,19) + " points");
