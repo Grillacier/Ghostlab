@@ -24,14 +24,19 @@ public class Client {
             System.out.println("<p/r> : p : afficher les messages sous forme de phrases");
             System.out.println("<p/r> : r : afficher les messages sous forme de requêtes");
             System.exit(1);
-        }
+        } else {
+            //demande son id à l'utilisateur
+            Scanner name = new Scanner(System.in);
+            System.out.println("Entrez votre nom : ");
+            String id = name.nextLine() + "12345678";
+            id = id.substring(0, 8);
 
-        else {
-        //demande son id à l'utilisateur
-        Scanner name = new Scanner(System.in);
-        System.out.println("Entrez votre nom : ");
-        String id = name.nextLine() + "12345678";
-        id = id.substring(0, 8);
+            while (!id.matches("[a-zA-Z0-9]+")) {
+                System.out.println("Votre nom ne doit contenir que des caractères alphanumériques");
+                System.out.println("Entrez votre nom : ");
+                id = name.nextLine() + "12345678";
+                id = id.substring(0, 8);
+            }
 
             try {
                 int port = Integer.parseInt(args[2]);

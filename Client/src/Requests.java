@@ -8,7 +8,7 @@ import java.util.Scanner;
 
 public class Requests {
     private boolean show = true;
-    private boolean end = false;
+    private boolean endGame = false;
     private String id; //str de 8 char
     private String port; //port UDP du client
     private String ipMulticast;
@@ -18,8 +18,8 @@ public class Requests {
         return show;
     }
 
-    public boolean getEnd() {
-        return end;
+    public boolean getEndGame() {
+        return endGame;
     }
 
     public String getId() {
@@ -42,8 +42,8 @@ public class Requests {
         this.show = show;
     }
 
-    public void setEnd(boolean end) {
-        this.end = end;
+    public void setEndGame(boolean endGame) {
+        this.endGame = endGame;
     }
 
     public void setId(String id) {
@@ -83,12 +83,20 @@ public class Requests {
             int choice = sc.nextInt();
             switch (choice) {
                 case 1:
-                    newGame(pw);
-                    canStart = receiveReg(br);
+                    if (!canStart) {
+                        newGame(pw);
+                        canStart = receiveReg(br);
+                        break;
+                    }
+                    System.out.println("Vous êtes déjà dans une partie");
                     break;
                 case 2:
-                    joinGame(pw);
-                    canStart = receiveReg(br);
+                    if (!canStart) {
+                        joinGame(pw);
+                        canStart = receiveReg(br);
+                        break;
+                    }
+                    System.out.println("Vous êtes déjà dans une partie");
                     break;
                 case 3:
                     listGames(pw);
@@ -163,7 +171,7 @@ public class Requests {
 
             Scanner sc = new Scanner(System.in);
             int choice = sc.nextInt();
-            if (this.end)
+            if (this.endGame)
                 receiveGobye(br);
 
             switch (choice) {
@@ -684,7 +692,7 @@ public class Requests {
                 System.out.println();
             } else if (message.startsWith("ENDGA")) {
                 //[ENDGA␣id␣p+++]
-                setEnd(true);
+                setEndGame(true);
                 if (this.show)
                     System.out.println("Le joueur " + message.substring(6,14)
                             + " a gagné avec " + message.substring(15,19) + " points");
