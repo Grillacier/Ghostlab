@@ -171,8 +171,13 @@ public class Requests {
 
             Scanner sc = new Scanner(System.in);
             int choice = sc.nextInt();
-            if (this.endGame)
+
+            if (this.endGame) {
+                //System.out.println("endGame = true");
                 receiveGobye(br);
+                //System.out.println("endGame = true");
+            }
+            //System.out.println("endGame = false");
 
             switch (choice) {
                 case 1:
@@ -347,7 +352,7 @@ public class Requests {
             br.read(buffer, 0, 17);
             String message = new String(buffer);
             if (this.show)
-                System.out.println("Joueur " + nbPlayers+1 + " : " + message.substring(6));
+                System.out.println("Joueur " + (i+1) + " : " + message.substring(6, message.length() - 3));
             else
                 System.out.println(message);
         }
