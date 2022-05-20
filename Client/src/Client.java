@@ -20,7 +20,7 @@ public class Client {
 
     public static void main(String[] args) {
         if (args.length != 4) {
-            System.out.println("Usage: java Client <host> <portUDPClient> <portTCP> <y/n>");
+            System.out.println("Usage: java Client <host> <portUDPClient> <portTCP> <p/r>");
             System.out.println("<p/r> : p : afficher les messages sous forme de phrases");
             System.out.println("<p/r> : r : afficher les messages sous forme de requêtes");
             System.exit(1);
