@@ -69,7 +69,7 @@ pthread_mutex_t verrou = PTHREAD_MUTEX_INITIALIZER;
 	}
 }
  */
-int chooseGame(int sock,char *ur_id) { // TODO: Ajoutez les options supplémentaires
+uint8_t chooseGame(int sock,char *ur_id) { // TODO: Ajoutez les options supplémentaires
     while (1) {
         char receiver [100];
 	int r = recv(sock, receiver, sizeof(char) * 20 + sizeof(uint8_t), 0);
@@ -114,9 +114,9 @@ int chooseGame(int sock,char *ur_id) { // TODO: Ajoutez les options supplémenta
 
             pthread_mutex_unlock(&verrou);
             if (nwgame > -1) {
-            	memcpy(ur_id,&id,sizeof(char)*8);
+            	strcpy(ur_id, id);
                 sendRegok(sock, nwgame);
-                return 1;
+                return nwgame;
             }
             sendRegno(sock);
             return 0;
@@ -147,6 +147,7 @@ int chooseGame(int sock,char *ur_id) { // TODO: Ajoutez les options supplémenta
             list[id_game].player_list[isplace] = addPlayer(list[id_game].player_list[isplace],id,p);
 	    
             pthread_mutex_unlock(&verrou);
+            strcpy(ur_id, id);
             sendRegok(sock, id_game);
             return id_game;
         } 
