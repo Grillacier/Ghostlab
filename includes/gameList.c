@@ -7,33 +7,93 @@
 
 typedef struct gamelist{
 
-	struct gamelist *next; // Parti suivante
-	uint8_t num;  // Numero de partie
-	uint8_t nb_player; // Nombre de joueurs
+	
+	
   	Playerlist player_list [5];
-  	int place [5];
-  	int started; //si started == nb_joueur alors on met a -1, impossible de rejoindre une partie si started est a -1
+  	int started; // -1 si lancé
   	char ip_cast [16]; // TODO: Implementer l'addresse 
   	char port_cast [5]; //TODO: De meme
+  	int create;
 }Gamelist;
 
-int ind = 1;
+// Fonction de tableau
 
-int getNbPlayer(Gamelist *list , uint8_t ngame){
-	int nbp = 0;
-	while(list != NULL){
-		if(ngame == list -> num){
-			for(int i = 0; i < 5 ; i++){
-				nbp = list ->place[i] + nbp;
-			}
-			
+uint8_t length(Gamelist list[]){
+	//printf("HERE %u \n", list[17].create);
+        uint8_t taille = 0;	
+	for(int i = 0; i<100;i++){
+		if(list[i].create == 1 && list[i].started != -1){
+			taille = taille + 1;
 		}
-		list = list -> next;
 	}
-	
-	return nbp;
+	return taille;
+}
+
+uint8_t findRoom(Gamelist list[]){
+	for(int i = 0; i<100;i++){
+		if(list[i].create == 0){
+			return i;
+		}
+	}
+	return -1;
+}
+
+//Fonction d'unite
+
+Gamelist addPlayerTo(Gamelist list, char *id, char *p){
+	int libre = findPlace(list.player_list);
+	if(libre == -1){
+		perror("Partie complete \n");
+	}
+	list.player_list[libre] = addPlayer(list.player_list[libre],id,p);
+	printf("Inscrit! \n");
+	return list;
 
 }
+
+int isCreate(Gamelist list){
+	return list.create;
+}
+
+Gamelist upStart(Gamelist list){
+
+	list.started = list.started + 1;
+	if(list.started == 5){
+		list.started = -1;
+	}
+	return list;
+}
+
+Gamelist create(Gamelist list){
+	list.create = 1;
+	return list;
+}
+
+Gamelist setUpList(Gamelist list){
+	list.started = 0;
+	list.create = 0;
+	for(int i = 0;i<5;i++){
+		list.player_list[i] = setUpPlayer(list.player_list[i]);
+	}
+	return list;
+	
+}
+
+
+uint8_t getNbPlayer(Gamelist list){
+	uint8_t nbp = 0;
+	for(int i = 0; i < 5 ; i++){
+		if(list.player_list[i].place == 1){
+			nbp = nbp +1;
+			}
+		}
+	
+	return nbp;
+	}
+	
+
+
+/*
 
 int imReady(Gamelist *list , uint8_t ngame){ // Incremente started, 2 pret, en attente , 0 erreur 
 	while(list != NULL){
@@ -107,15 +167,13 @@ int addPlayerTo(Gamelist *list, uint8_t ngame , char *i , char*po){
 				}
 			}
 			if(place >-1){
-				//list -> player_list[place].id = malloc(sizeof(char)*9);
 				
 				strcpy(list -> player_list[place].id,i);
-				//printf("%ld",strlen(list->player_list[place].id));
-				//printf("HERE: %s \n",list -> player_list[place].id);
+				
 				strcpy(list -> player_list[place].port,po);
 				
 			}
-			
+			printf("Vous etes inscrit \n");
 			return list->num;
 		}
 		list = list -> next;
@@ -165,8 +223,8 @@ int rmv(Gamelist *list,uint8_t n){
 		last = list;
 		list = list -> next;
 	}
-	return 0;
-}
+	return 0; */
+//}
 
  /*void main(){
 	Gamelist *test = NULL;

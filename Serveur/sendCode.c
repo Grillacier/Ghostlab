@@ -65,7 +65,7 @@ int sendRegok(int sock, uint8_t id_game){
 	memcpy(buffer,buffer1,strlen(buffer1));
 	memcpy(buffer + strlen(buffer1),&be_id_game, sizeof(uint8_t));
 	memcpy(buffer + strlen(buffer1)+sizeof(uint8_t),buffer2, strlen(buffer2));
-	if (send(sock,buffer,sizeof(char)*9+sizeof(uint8_t),0) == -1){
+	if (send(sock,buffer,sizeof(char)*9+sizeof(uint8_t),0) == 0){
 		perror("Erreur REGOK_m***\n");
 		return 0;
 	}
@@ -93,11 +93,16 @@ int sendUnreg(int sock, uint8_t id_game){
 int sendGames(int sock, uint8_t num_game){
 	char *buffer1 = "GAMES ";
 	char *buffer2 = "***";
-	uint8_t be_num_game = htons(num_game);
-	void * buffer = malloc(sizeof(char)*9 + sizeof(uint8_t));
+	
+	printf("Nb de partie:  %u \n",num_game);
+	
+	
+	char buffer [10];
 	memcpy(buffer,buffer1,strlen(buffer1));
-	memcpy(buffer + strlen(buffer1),&be_num_game, sizeof(uint8_t));
+	memcpy(buffer + strlen(buffer1),&num_game, sizeof(uint8_t));
 	memcpy(buffer + strlen(buffer1)+sizeof(uint8_t),buffer2, strlen(buffer2));
+	
+	
 	if (send(sock,buffer,sizeof(char)*9+sizeof(uint8_t),0) == -1){
 		perror("Erreur GAMES_n***\n");
 		return 0;
@@ -110,9 +115,9 @@ int sendGames(int sock, uint8_t num_game){
 int sendOgame(int sock, uint8_t id_game, uint8_t nb_player){
 	char *buffer1 = "OGAME ";
 	char *buffer2 = "***";
-	uint8_t be_id_game = htons(id_game);
+	uint8_t be_id_game = id_game;
 	char space = ' ';
-	uint8_t be_nb_player = htons(nb_player) ; 
+	uint8_t be_nb_player = nb_player ; 
 	void * buffer = malloc(sizeof(char)*10 + sizeof(uint8_t)*2);
 	memcpy(buffer,buffer1,strlen(buffer1));
 	memcpy(buffer + strlen(buffer1),&be_id_game, sizeof(uint8_t));

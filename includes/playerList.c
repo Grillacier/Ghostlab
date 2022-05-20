@@ -10,13 +10,41 @@ typedef struct playerlist{
 	//struct playerlist *next; // Joueur suivant
 	char id [9]; // Identifiant joueur
   	char port[5]; // Numero du port joueur
+  	int place; // 0 libre , 1 prise
   
 }Playerlist;
 
+// Fonction d'unite
+Playerlist setUpPlayer(Playerlist p){
+	p.place = 0;
+	return p;
+}
+
+Playerlist addPlayer(Playerlist list, char *id , char *p){
+	strcpy(list.id ,id);
+	list.id[8] = '\n';
+	strcpy(list.port,p);
+	list.port[4] = '\n';
+	list.place = 1;
+	return list;
+}
 
 
+Playerlist rmvPlayer(Playerlist p){
+	p.place = 0;
+	return p;
+}
+// Fonction de liste 
 
+int findPlace(Playerlist list[]){
+	for(int i = 0; i<5; i++){
+		if(list[i].place == 0){
+			return i;
+		}
+	}
+	return -1;
 
+}
 /*void addPlayer(Playerlist **list , char *i , char *p){
 	Playerlist *element = malloc(sizeof(Playerlist));
 	assert(element != NULL);
