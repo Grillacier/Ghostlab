@@ -37,6 +37,41 @@ int sendSize(int sock, uint8_t ngame){
 
 }
 
+int sendList(int sock , uint8_t m, uint8_t s){
+	char *c = "LIST! ";
+	char buffer[12];
+	buffer[11]= '*';
+	buffer[10]= '*';
+	buffer[9] = '*';
+	buffer[7] =' ';
+	memcpy(buffer,c,strlen(c));
+	memcpy(buffer+strlen(c),&m,sizeof(uint8_t));
+	memcpy(buffer+strlen(c) + sizeof(uint8_t)+ sizeof(char),&s,sizeof(uint8_t));
+	if (send(sock,buffer,12,0) == -1){
+		perror("Erreur LIST***\n");
+		return 0;
+	}
+	printf("Ok LIST***\n");
+	return 1;
+}
+
+int sendPlayr(int sock, char *id){
+	char buffer[18];
+	char *s = "***";
+	char *c = "PLAYR ";
+	memcpy(buffer,c,strlen(c));
+	memcpy(buffer+strlen(c),id,strlen(id));
+	memcpy(buffer+strlen(c)+sizeof(char)*8,s,sizeof(char)*3);
+	printf("My name : %s \n",buffer);
+	printf("CHAR 16: %c \n",buffer[16]);
+	if (send(sock,buffer,17,0) == -1){
+		perror("Erreur PLAYR***\n");
+		return 0;
+	}
+	printf("Ok PLAYR***\n");
+	return 1;
+}
+
 int sendDunno(int sock){
 	char *buffer = "DUNNO***";
 	if (send(sock,buffer,strlen(buffer),0) == -1){
@@ -60,7 +95,7 @@ int sendRegno(int sock){
 int sendRegok(int sock, uint8_t id_game){
 	char *buffer1 = "REGOK ";
 	char *buffer2 = "***";
-	uint8_t be_id_game = htons(id_game);
+	uint8_t be_id_game = id_game;
 	void * buffer = malloc(sizeof(char)*9 + sizeof(uint8_t));
 	memcpy(buffer,buffer1,strlen(buffer1));
 	memcpy(buffer + strlen(buffer1),&be_id_game, sizeof(uint8_t));
@@ -115,17 +150,16 @@ int sendGames(int sock, uint8_t num_game){
 int sendOgame(int sock, uint8_t id_game, uint8_t nb_player){
 	char *buffer1 = "OGAME ";
 	char *buffer2 = "***";
-	uint8_t be_id_game = id_game;
 	char space = ' ';
-	uint8_t be_nb_player = nb_player ; 
-	void * buffer = malloc(sizeof(char)*10 + sizeof(uint8_t)*2);
+	char buffer [12];
+	printf("INTERNE: %u \n",nb_player);
 	memcpy(buffer,buffer1,strlen(buffer1));
-	memcpy(buffer + strlen(buffer1),&be_id_game, sizeof(uint8_t));
+	memcpy(buffer + strlen(buffer1),&id_game, sizeof(uint8_t));
 	memcpy(buffer + strlen(buffer1)+sizeof(uint8_t),&space,sizeof(char));
-	memcpy(buffer + strlen(buffer1)+sizeof(uint8_t)+sizeof(char),&be_nb_player, sizeof(uint8_t));
+	memcpy(buffer + strlen(buffer1)+sizeof(uint8_t)+sizeof(char),&nb_player, sizeof(uint8_t));
 	memcpy(buffer + strlen(buffer1)+sizeof(uint8_t)*2+sizeof(char),buffer2,strlen(buffer2));
 	
-	if (send(sock,buffer,sizeof(char)*9+sizeof(uint8_t),0) == -1){
+	if (send(sock,buffer,12,0) == -1){
 		perror("Erreur OGAME_***\n");
 		return 0;
 	}
