@@ -12,23 +12,26 @@
 
 int sendSize(int sock, uint8_t ngame){
 
-	uint8_t v_lt[2];
-	v_lt[0] = 20;
-	v_lt[1] = 0;
+	uint16_t v_lt = htons(20);
+	printf("vlt %u \n", v_lt);
+	
 	
 	char buffer[17];
 	char *size = "SIZE! ";
-	buffer[8] = ' ';
-	buffer[11] = ' ';
-	buffer[13] = '*';
-	buffer[14] = '*';
-	buffer[15] = '*';
-	buffer[17] = '\n';
+	char *s = " ";
+	char *c = "***";
+	buffer[16] = '\0';
 	memcpy(buffer, size, sizeof(char)*6);
 	memcpy(buffer+sizeof(char)*6, &ngame, sizeof(uint8_t));
-	memcpy(buffer+sizeof(char)*8, &v_lt, sizeof(uint16_t));
+	memcpy(buffer+sizeof(char)*6 + sizeof(uint8_t), s, strlen(s));
+	memcpy(buffer+sizeof(char)*7+sizeof(uint8_t), &v_lt, sizeof(uint16_t));
+	memcpy(buffer+sizeof(char)*9 + sizeof(uint8_t), s, strlen(s));
 	memcpy(buffer+sizeof(char)*11, &v_lt, sizeof(uint16_t));
-	if(send(sock,buffer,strlen(buffer),0) == 0){
+	memcpy(buffer+sizeof(char)*13, c, strlen(c));
+	uint16_t cor = 478;
+	memcpy(&cor,buffer+8,sizeof(uint16_t));
+	
+	if(send(sock,buffer,16,0) == 0){
 		perror("SENDSIZE: Cannot send");
 		return 0;
 	}
@@ -62,8 +65,7 @@ int sendPlayr(int sock, char *id){
 	memcpy(buffer,c,strlen(c));
 	memcpy(buffer+strlen(c),id,strlen(id));
 	memcpy(buffer+strlen(c)+sizeof(char)*8,s,sizeof(char)*3);
-	printf("My name : %s \n",buffer);
-	printf("CHAR 16: %c \n",buffer[16]);
+	
 	if (send(sock,buffer,17,0) == -1){
 		perror("Erreur PLAYR***\n");
 		return 0;
@@ -112,8 +114,8 @@ int sendRegok(int sock, uint8_t id_game){
 int sendUnreg(int sock, uint8_t id_game){
 	char *buffer1 = "UNREG ";
 	char *buffer2 = "***";
-	uint8_t be_id_game = htons(id_game);
-	void * buffer = malloc(sizeof(char)*9 + sizeof(uint8_t));
+	uint8_t be_id_game = id_game;
+	char * buffer [10];
 	memcpy(buffer,buffer1,strlen(buffer1));
 	memcpy(buffer + strlen(buffer1),&be_id_game, sizeof(uint8_t));
 	memcpy(buffer + strlen(buffer1)+sizeof(uint8_t),buffer2, strlen(buffer2));
@@ -128,8 +130,6 @@ int sendUnreg(int sock, uint8_t id_game){
 int sendGames(int sock, uint8_t num_game){
 	char *buffer1 = "GAMES ";
 	char *buffer2 = "***";
-	
-	printf("Nb de partie:  %u \n",num_game);
 	
 	
 	char buffer [10];
@@ -152,7 +152,6 @@ int sendOgame(int sock, uint8_t id_game, uint8_t nb_player){
 	char *buffer2 = "***";
 	char space = ' ';
 	char buffer [12];
-	printf("INTERNE: %u \n",nb_player);
 	memcpy(buffer,buffer1,strlen(buffer1));
 	memcpy(buffer + strlen(buffer1),&id_game, sizeof(uint8_t));
 	memcpy(buffer + strlen(buffer1)+sizeof(uint8_t),&space,sizeof(char));

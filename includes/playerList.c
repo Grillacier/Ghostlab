@@ -20,6 +20,8 @@ Playerlist setUpPlayer(Playerlist p){
 	return p;
 }
 
+
+
 Playerlist addPlayer(Playerlist list, char *id , char *p){
 	strcpy(list.id ,id);
 	list.id[8] = '\n';
@@ -44,6 +46,15 @@ int findPlace(Playerlist list[]){
 	}
 	return -1;
 
+}
+
+int searchById(Playerlist list[], char *ide){
+	for(int i = 0 ;i<5;i++){
+		if(strncmp(list[i].id,ide,8) == 0){
+			return i;
+		}
+	}
+	return -1;
 }
 /*void addPlayer(Playerlist **list , char *i , char *p){
 	Playerlist *element = malloc(sizeof(Playerlist));
