@@ -59,9 +59,13 @@ Gamelist create(Gamelist list) {
     return list;
 }
 
-Gamelist setUpList(Gamelist list) {
+Gamelist setUpList(Gamelist list,int i) {
     list.started = 0;
     list.create = 0;
+    
+    int po = 6001 + i;
+    sprintf(list.port_cast,"%d",po);
+    list.port_cast[4] = '\0';
     for (int i = 0; i < 5; i++) {
         list.player_list[i] = setUpPlayer(list.player_list[i]);
     }

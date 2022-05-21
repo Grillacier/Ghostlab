@@ -3,12 +3,11 @@
 
 #include <stdio.h>
 #include <stdint.h>
-
+#include "../Serveur/joueur.c"
 typedef struct gamelist{
     joueur player_list [5];
     int started; // 6 si lancé
-    char ip_cast [16]; // TODO: Implementer l'addresse
-    char port_cast [5]; //TODO: De meme
+    char port_cast [5]; 
     int create;
 }Gamelist;
 
@@ -19,6 +18,6 @@ Gamelist addPlayerTo(Gamelist list, char *id, char *p);
 int isCreate(Gamelist list);
 Gamelist upStart(Gamelist list);
 Gamelist create(Gamelist list);
-Gamelist setUpList(Gamelist list);
+Gamelist setUpList(Gamelist list,int i);
 
 #endif GAMELIST_H
