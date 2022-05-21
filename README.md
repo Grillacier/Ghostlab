@@ -39,7 +39,8 @@ Une fois ces commandes entrées dans les terminaux, vous pouvez commencer à jou
 **serveur.c** : Programme principal du serveur
 
 Extensions :
-Téléportation : Cette extension a été créée mais pas implémentée (elle ne fonctionne pas). Le but initial de cette extention est de téléporter le joeur aléatoirement quelque part dans le labyrinthe.
+
+Téléportation : Cette extension a été créée mais pas implémentée (elle ne fonctionne pas). Le but initial de cette extention est de téléporter le joueur aléatoirement quelque part dans le labyrinthe.
 
 Merci de votre attention, nous vous souhaitons une agréable partie sur GhostLab !
 

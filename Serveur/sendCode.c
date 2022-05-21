@@ -1,20 +1,32 @@
 #include "../includes/sendCode.h"
 
-int sendWelco(int sock, uint8_t idg, uint8_t f, char *p) {
-    uint16_t vlt = htons(20);
+int sendMall(int sock) {
+    char *buffer = "MALL!***";
+    if (send(sock, buffer, strlen(buffer), 0) == -1) {
+        perror("Erreur MALL***\n");
+        return 0;
+    }
+    printf("Ok MALL***\n");
+    return 1;
+}
+
+int sendWelco(int sock, uint8_t idg, Lab* l, char *p) {
     char *ip = "235.235.235.235.";
     char *wel = "WELCO ";
     char buffer[50];
     char *space = " ";
     char *end = "***";
+    uint16_t h = htons(l->x);
+    uint16_t w = htons(l->y);
+
     memcpy(buffer, wel, sizeof(char) * 6);
     memcpy(buffer + 6, &idg, sizeof(uint8_t));
     memcpy(buffer + 7, space, sizeof(char));
-    memcpy(buffer + 8, &vlt, sizeof(uint16_t));
+    memcpy(buffer + 8, &h, sizeof(uint16_t));
     memcpy(buffer + 10, space, sizeof(char));
-    memcpy(buffer + 11, &vlt, sizeof(uint16_t));
+    memcpy(buffer + 11, &w, sizeof(uint16_t));
     memcpy(buffer + 13, space, sizeof(char));
-    memcpy(buffer + 14, &f, sizeof(uint8_t));
+    memcpy(buffer + 14, &l->ghosts, sizeof(uint8_t));
     memcpy(buffer + 15, space, sizeof(char));
     memcpy(buffer + 16, ip, sizeof(char) * 15);
     memcpy(buffer + 31, space, sizeof(char));
@@ -30,17 +42,18 @@ int sendWelco(int sock, uint8_t idg, uint8_t f, char *p) {
 
 }
 
+//[POSIT␣id␣x␣y***]
 int sendPosit(int sock, char *id, char *x, char *y) {
     char *wel = "POSIT ";
     char buffer[50];
     char *space = " ";
     char *end = "***";
     memcpy(buffer, wel, sizeof(char) * 6);
-    memcpy(buffer + sizeof(char) * 6, &id, sizeof(char) * 8);
+    memcpy(buffer + sizeof(char) * 6, id, sizeof(char) * 8);
     memcpy(buffer + 14, space, sizeof(char));
     memcpy(buffer + 15, x, sizeof(char) * 3);
     memcpy(buffer + 18, space, sizeof(char));
-    memcpy(buffer + sizeof(char) * 19, x, sizeof(char) * 3);
+    memcpy(buffer + sizeof(char) * 19, y, sizeof(char) * 3);
     memcpy(buffer + 22, end, sizeof(char) * 3);
     if (send(sock, buffer, 25, 0) == 0) {
         perror("POSIT: Cannot send");

@@ -26,10 +26,13 @@ int listGame(int sock) {
     pthread_mutex_unlock(&verrou);
     return 1;
 }
-uint8_t inGame(int sock,char *ur_id,uint8_t ur_game_id) { 
+uint8_t inGame(int sock,char *ur_id,uint8_t ur_game_id) {
+    sendWelco(sock, ur_game_id, list[ur_game_id].lab, list[ur_game_id].port_cast);
+    int v = searchById(list[ur_game_id].player_list, ur_id);
+    sendPosit(sock, ur_id, list[ur_game_id].player_list[v].x, list[ur_game_id].player_list[v].y);
     while (1) {
-        char receiver [100];
-	int r = recv(sock, receiver, sizeof(char) * 20 + sizeof(uint8_t), 0);
+        char receiver [250];
+	int r = recv(sock, receiver, 249, 0);
         if (r < 0) {
             perror("INGAME:End of connexion \n");
             return -2;
@@ -51,8 +54,14 @@ uint8_t inGame(int sock,char *ur_id,uint8_t ur_game_id) {
           	char umess [200];
           	memcpy(umess,receiver + sizeof(char)*5,sizeof(char)*r-3);
          	sendAllMessage(ur_id,list[ur_game_id].port_cast,umess);
+             sendMall(sock);
          	return ur_game_id;
          }
+          if (strncmp(receiver, "UPMOV?", 5) == 0 || strncmp(receiver, "DOMOV?", 5) == 0 ||
+                  strncmp(receiver, "LEMOV?", 5) == 0 || strncmp(receiver, "RIMOV?", 5) == 0) {
+              sendMove(list[ur_game_id].lab, sock, receiver, list[ur_game_id].player_list[searchById(list[ur_game_id].player_list, ur_id)], list[ur_game_id].port_cast);
+          }
+
           if (strncmp(receiver, "SEND?",5) == 0) {
           	char umess [200];
           	memcpy(umess,receiver + sizeof(char)*14,sizeof(char)*r-3);
@@ -61,9 +70,9 @@ uint8_t inGame(int sock,char *ur_id,uint8_t ur_game_id) {
           	int index = searchById(list[ur_game_id].player_list,t_id);
           	if(index == -1){
           		sendNos(sock);
-          		
           	}
-         	if(sendMessage(ur_id,list[ur_game_id].player_list[index].ip,list[ur_game_id].player_list[index].port,umess)==1){		sendSend(sock);
+         	if(sendMessage(ur_id,list[ur_game_id].player_list[index].ip,list[ur_game_id].player_list[index].port,umess)==1){
+                 sendSend(sock);
          	}
          	
          	return ur_game_id;
@@ -388,18 +397,13 @@ void *lobby(void *sock) {
         if (ur_game_id == 254) {
             printf("LOBBY: Close sock\n");
             close(sock2);
-
         }
         while (ur_game_id < 100) {
-
             printf(" LOBBY: waiting for start \n");
             ur_game_id = prepareGame(sock2, ur_id, ur_game_id, ready);
-
-
             while (strcmp(ready, "Y") == 0) {
-
-
                 while (list[ur_game_id].started == 6) {
+                    printf("LOBBY: inGame \n");
                     ur_game_id = inGame(sock2,ur_id,ur_game_id);
                     if(ur_game_id == -2){
                     	printf("FIN DE PARTIE \n");
@@ -407,7 +411,6 @@ void *lobby(void *sock) {
                     }
                 }
             }
-
         }
 
         // printf("Vous n'etes pas/ plus inscrit");
