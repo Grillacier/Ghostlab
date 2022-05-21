@@ -1,20 +1,21 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
+#include "labyrinthe.h"
 
-#define X 20
-#define Y 20
-
-typedef struct labyrinthe {
-    char matrice[X][Y];
-    int ghosts;
-
-} Lab;
+Lab* init(int x, int y, uint8_t ghosts) {
+    Lab* lab = malloc(sizeof(Lab));
+    lab->x = x;
+    lab->y = y;
+    lab->matrice = malloc(sizeof(char*) * x);
+    for (int i = 0; i < x; i++) {
+        lab->matrice[i] = malloc(sizeof(char) * y);
+    }
+    lab->ghosts = ghosts;
+    fillLab(lab, ghosts);
+    return lab;
+}
 
 void printLab(Lab *l) {
-    for (int i = 0; i < X; i++) {
-        for (int j = 0; j < Y; j++) {
+    for (int i = 0; i < l->x; i++) {
+        for (int j = 0; j < l->y; j++) {
             printf("%c ", l->matrice[i][j]);
         }
         printf("\n");
@@ -29,7 +30,7 @@ Lab createLab(Lab *l, int px, int py) {
         way = (way + 1) % 4;
         switch (way) {
             case 0:
-                if (py + 2 < Y) {
+                if (py + 2 < l->y) {
                     if (l->matrice[px][py + 2] == 'n') {
                         l->matrice[px][py + 1] = ' ';
                         createLab(l, px, py + 2);
@@ -47,7 +48,7 @@ Lab createLab(Lab *l, int px, int py) {
                 break;
 
             case 2:
-                if (px + 2 < X) {
+                if (px + 2 < l->x) {
                     if (l->matrice[px + 2][py] == 'n') {
                         l->matrice[px + 1][py] = ' ';
                         createLab(l, px + 2, py);
@@ -71,41 +72,41 @@ Lab createLab(Lab *l, int px, int py) {
     return *l;
 }
 
-void ghost(Lab *l, int nb) {
+void ghost(Lab *l, uint8_t nb) {
     for (int i = 0; i < nb; i++) {
-        int x = rand() % X;
-        int y = rand() % Y;
+        int x = rand() % l->x;
+        int y = rand() % l->y;
         while (l->matrice[x][y] != ' ') {
-            x = rand() % X;
-            y = rand() % Y;
+            x = rand() % l->x;
+            y = rand() % l->y;
         }
         l->matrice[x][y] = 'G';
     }
 }
 
-Lab fillLab(Lab *l, int nb) {
-    for (int x = 0; x < X; x++) {
-        for (int y = 0; y < Y; y++) {
+Lab fillLab(Lab *l, uint8_t nb) {
+    for (int x = 0; x < l->x; x++) {
+        for (int y = 0; y < l->y; y++) {
             l->matrice[x][y] = 'n';
         }
     }
-    for (int x = 0; x < X; x += 2) {
-        for (int y = 0; y < Y; y++) {
+    for (int x = 0; x < l->x; x += 2) {
+        for (int y = 0; y < l->y; y++) {
             l->matrice[x][y] = '+';
         }
     }
-    for (int x = 0; x < X; x++) {
-        for (int y = 0; y < Y; y += 2) {
+    for (int x = 0; x < l->x; x++) {
+        for (int y = 0; y < l->y; y += 2) {
             l->matrice[x][y] = '+';
         }
     }
 
     srand(time(NULL));
-    int px = rand() % X;
-    int py = rand() % Y;
+    int px = rand() % l->x;
+    int py = rand() % l->y;
     while (l->matrice[px][py] == '+') {
-        px = rand() % X;
-        py = rand() % Y;
+        px = rand() % l->x;
+        py = rand() % l->y;
     }
 
     createLab(l, px, py);
@@ -115,9 +116,7 @@ Lab fillLab(Lab *l, int nb) {
 
 /*
 int main() {
-    Lab* test;
-    test->ghosts = 5;
-    fillLab(test, test->ghosts);
+    Lab* test = init(10, 10, 5);
     printLab(test);
     return 0;
 }
