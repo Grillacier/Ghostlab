@@ -10,7 +10,7 @@ typedef struct gamelist{
 	
 	
   	Playerlist player_list [5];
-  	int started; // -1 si lancé
+  	int started; // 6 si lancé
   	char ip_cast [16]; // TODO: Implementer l'addresse 
   	char port_cast [5]; //TODO: De meme
   	int create;
@@ -40,6 +40,17 @@ uint8_t findRoom(Gamelist list[]){
 
 //Fonction d'unite
 
+uint8_t getNbPlayer(Gamelist list){
+	uint8_t nbp = 0;
+	for(int i = 0; i < 5 ; i++){
+		if(list.player_list[i].place == 1){
+			nbp = nbp +1;
+			}
+		}
+	
+	return nbp;
+	}
+
 Gamelist addPlayerTo(Gamelist list, char *id, char *p){
 	int libre = findPlace(list.player_list);
 	if(libre == -1){
@@ -58,8 +69,8 @@ int isCreate(Gamelist list){
 Gamelist upStart(Gamelist list){
 
 	list.started = list.started + 1;
-	if(list.started == 5){
-		list.started = -1;
+	if(getNbPlayer(list) == list.started){
+		list.started = 6;
 	}
 	return list;
 }
@@ -80,16 +91,7 @@ Gamelist setUpList(Gamelist list){
 }
 
 
-uint8_t getNbPlayer(Gamelist list){
-	uint8_t nbp = 0;
-	for(int i = 0; i < 5 ; i++){
-		if(list.player_list[i].place == 1){
-			nbp = nbp +1;
-			}
-		}
-	
-	return nbp;
-	}
+
 	
 
 

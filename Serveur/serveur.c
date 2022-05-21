@@ -32,7 +32,7 @@ int listGame (int sock){
 
     for(int i = 0; i<100;i++) {
     	
-    	if(list[i].create == 1){
+    	if(list[i].create == 1 &&list[i].started < 6){
     		uint8_t u_int = i;
     		printf("%d  ", i );
         	if(sendOgame(sock, u_int, getNbPlayer(list[i])) == 0){
@@ -48,16 +48,16 @@ int listGame (int sock){
 }
 
 
-uint8_t prepareGame(int sock, char *ur_id, uint8_t ur_game_id){
+uint8_t prepareGame(int sock, char *ur_id, uint8_t ur_game_id,char* ready){
 	 while (1) {
         char receiver [100];
 	int r = recv(sock, receiver, sizeof(char) * 20 + sizeof(uint8_t), 0);
         if (r < 0) {
-            perror("CHOOSEGAME:End of connexion \n");
+            perror("PREPARE:End of connexion \n");
             return ur_game_id;
         }
         if (r == 0) {
-            perror("CHOOSEGAME: No sended data \n");
+            perror("PREPARE: No sent data \n");
             return ur_game_id;
         }
 
@@ -80,7 +80,7 @@ uint8_t prepareGame(int sock, char *ur_id, uint8_t ur_game_id){
         	}
         	if(sendSize(sock,num_game) == 0){
         		pthread_mutex_unlock(&verrou);
-        		perror("CHOOSEGAME: Cannot send size \n");
+        		perror("PREPARE: Cannot send size \n");
         		return ur_game_id;
         	}
         	pthread_mutex_unlock(&verrou);
@@ -88,7 +88,15 @@ uint8_t prepareGame(int sock, char *ur_id, uint8_t ur_game_id){
         }
         
         if (strncmp(receiver, "START",5) == 0) {
-        	//TODO: Implementez START
+        	char str[2];
+        	str[0] = 'Y';
+        	str[1] = '\0';
+        	pthread_mutex_lock(&verrou);
+        	list[ur_game_id] = upStart(list[ur_game_id]);
+        	memcpy(ready,str,sizeof(char)*1);
+        	printf("PREPAREGAME: Start, waiting for other \n");
+        	printf("PREPAREGAME: Start set up to %d \n",list[ur_game_id].started);
+        	pthread_mutex_unlock(&verrou);
         	return ur_game_id;
         }
         if (strncmp(receiver, "UNREG",5) == 0) {
@@ -102,10 +110,11 @@ uint8_t prepareGame(int sock, char *ur_id, uint8_t ur_game_id){
             	 	}
         		return ur_game_id;
         	}
+        	printf("UR PLACE: %d \n",ur_place);
         	list[ur_game_id].player_list[ur_place] = rmvPlayer(list[ur_game_id].player_list[ur_place]);
         	pthread_mutex_unlock(&verrou);
-        	if(sendUnreg(sock,ur_game_id) == 0){
-            	 		perror("Cannot send REGNO \n");
+        	if(sendUnrok(sock,ur_game_id) == 0){
+            	 		perror("Cannot send UNROK \n");
             	 	}
         	return -1;
         }
@@ -178,7 +187,7 @@ int chooseGame(int sock,char *ur_id) {
 	int r = recv(sock, receiver, sizeof(char) * 20 + sizeof(uint8_t), 0);
         if (r < 0) {
             perror("CHOOSEGAME:End of connexion \n");
-            return -1;
+            return -2;
         }
         if (r == 0) {
             perror("CHOOSEGAME: No sended data \n");
@@ -307,7 +316,7 @@ int chooseGame(int sock,char *ur_id) {
             memmove(&id_game, receiver + sizeof(char) * 20, sizeof(uint8_t));
             pthread_mutex_lock(&verrou);
             int check = isCreate(list[id_game]);
-            if(check == 0){
+            if(check == 0 || list[id_game].started>5){
             	perror("CHOOSEGAME: Partie non créer");
             	sendRegno(sock);
             	pthread_mutex_unlock(&verrou);
@@ -322,6 +331,7 @@ int chooseGame(int sock,char *ur_id) {
             list[id_game].player_list[isplace] = addPlayer(list[id_game].player_list[isplace],id,p);
 	    
             pthread_mutex_unlock(&verrou);
+            memcpy(ur_id,&id,sizeof(char)*8);
             sendRegok(sock, id_game);
             return id_game;
         } 
@@ -336,9 +346,11 @@ void *lobby(void *sock) {
     // Variable de thread
     int sock2 = *(int *) sock;
     uint8_t ur_game_id = -1;
-    int ready = 0;
+    char ready[2];
+    ready[1] = '\0';
+    ready[0] = 'N';
     char ur_id[9];
-    ur_id[8] = '\n';
+    ur_id[8] = '\0';
     // ------
    
         if(listGame(sock2) == 0){
@@ -348,21 +360,26 @@ void *lobby(void *sock) {
     
     while(1){
 	    printf("LOBBY: Return to main menu \n");
+	    printf("idGame:  %u \n",ur_game_id);
             ur_game_id = chooseGame(sock2,ur_id); 
             if(ur_game_id == 254){ 
             	printf("LOBBY: Close sock\n");
             	close(sock2);
+            	
             }
             while (ur_game_id < 100) {
             	
-                printf(" LOBBY: be ready \n");
-                ur_game_id = prepareGame(sock2,ur_id, ur_game_id);
-                 printf("idGame:  %u \n",ur_game_id);
+                printf(" LOBBY: waiting for start \n");
+                ur_game_id = prepareGame(sock2,ur_id, ur_game_id,ready);
                
-                while(ready == 1){
+                 
+                while(strcmp(ready,"Y") == 0){
                 	
-                	printf("PRET \n"); 
-                }
+                
+                	while(list[ur_game_id].started == 6){
+                		printf("GO \n");
+                	}
+                } 
                 
             } 
 

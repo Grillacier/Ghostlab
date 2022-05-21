@@ -111,8 +111,8 @@ int sendRegok(int sock, uint8_t id_game){
 	
 }
 
-int sendUnreg(int sock, uint8_t id_game){
-	char *buffer1 = "UNREG ";
+int sendUnrok(int sock, uint8_t id_game){
+	char *buffer1 = "UNROK ";
 	char *buffer2 = "***";
 	uint8_t be_id_game = id_game;
 	char * buffer [10];
@@ -120,10 +120,10 @@ int sendUnreg(int sock, uint8_t id_game){
 	memcpy(buffer + strlen(buffer1),&be_id_game, sizeof(uint8_t));
 	memcpy(buffer + strlen(buffer1)+sizeof(uint8_t),buffer2, strlen(buffer2));
 	if (send(sock,buffer,sizeof(char)*9+sizeof(uint8_t),0) == -1){
-		perror("Erreur UNREG_m***\n");
+		perror("Erreur UNROK_m***\n");
 		return 0;
 	}
-	printf("Ok UNREG_m***\n");
+	printf("Ok UNROK_m***\n");
 	return 1;
 }
 
