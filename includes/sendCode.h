@@ -14,6 +14,8 @@
 #include <stdint.h>
 #include "gameList.h"
 
+int sendWelco(int sock, uint8_t idg, uint8_t f, char *p);
+int sendPosit(int sock, char *id, char *x, char *y)
 int sendSize(int sock, uint8_t ngame);
 int sendList(int sock, uint8_t m, uint8_t s);
 int sendPlayr(int sock, char *id);

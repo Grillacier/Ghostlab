@@ -9,7 +9,7 @@
 typedef struct gamelist{
     Lab *lab;
     joueur player_list [5];
-    int started; // 6 si lancé
+    int started; // 6 si lance
     char port_cast [5]; 
     int create;
 }Gamelist;

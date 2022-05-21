@@ -1,5 +1,55 @@
 #include "../includes/sendCode.h"
 
+int sendWelco(int sock, uint8_t idg, uint8_t f, char *p) {
+    uint16_t vlt = htons(20);
+    char *ip = "235.235.235.235.";
+    char *wel = "WELCO ";
+    char buffer[50];
+    char *space = " ";
+    char *end = "***";
+    memcpy(buffer, wel, sizeof(char) * 6);
+    memcpy(buffer + 6, &idg, sizeof(uint8_t));
+    memcpy(buffer + 7, space, sizeof(char));
+    memcpy(buffer + 8, &vlt, sizeof(uint16_t));
+    memcpy(buffer + 10, space, sizeof(char));
+    memcpy(buffer + 11, &vlt, sizeof(uint16_t));
+    memcpy(buffer + 13, space, sizeof(char));
+    memcpy(buffer + 14, &f, sizeof(uint8_t));
+    memcpy(buffer + 15, space, sizeof(char));
+    memcpy(buffer + 16, ip, sizeof(char) * 15);
+    memcpy(buffer + 31, space, sizeof(char));
+    memcpy(buffer + 32, p, sizeof(char) * 4);
+    memcpy(buffer + 36, end, sizeof(char) * 3);
+
+    if (send(sock, buffer, 39, 0) == 0) {
+        perror("WELCO: Cannot send");
+        return 0;
+    }
+    printf("Ok WELCO*** \n");
+    return 1;
+
+}
+
+int sendPosit(int sock, char *id, char *x, char *y) {
+    char *wel = "POSIT ";
+    char buffer[50];
+    char *space = " ";
+    char *end = "***";
+    memcpy(buffer, wel, sizeof(char) * 6);
+    memcpy(buffer + sizeof(char) * 6, &id, sizeof(char) * 8);
+    memcpy(buffer + 14, space, sizeof(char));
+    memcpy(buffer + 15, x, sizeof(char) * 3);
+    memcpy(buffer + 18, space, sizeof(char));
+    memcpy(buffer + sizeof(char) * 19, x, sizeof(char) * 3);
+    memcpy(buffer + 22, end, sizeof(char) * 3);
+    if (send(sock, buffer, 25, 0) == 0) {
+        perror("POSIT: Cannot send");
+        return 0;
+    }
+    printf("Ok POSIT*** \n");
+    return 1;
+}
+
 int sendSize(int sock, uint8_t ngame) {
 
     uint16_t v_lt = htons(20);
@@ -187,7 +237,7 @@ int sendOgame(int sock, uint8_t id_game, uint8_t nb_player) {
     return 1;
 }
 
-int sendMove(Lab *lab, int socket, char *mess, joueur p, char* port) {
+int sendMove(Lab *lab, int socket, char *mess, joueur p, char *port) {
     char distance[4];
     strncpy(distance, mess + 6, 3);
     distance[3] = '\0';
@@ -233,8 +283,8 @@ int sendMove(Lab *lab, int socket, char *mess, joueur p, char* port) {
 int sendGlis(int sock, Gamelist g) {
     int pos = 0;
     uint8_t s = getNbPlayer(g);
-    char buffer[10+30*s];
-    memcpy(buffer+pos, "GLIS! ", 6);
+    char buffer[10 + 30 * s];
+    memcpy(buffer + pos, "GLIS! ", 6);
     pos += 6;
     memcpy(buffer + pos, &s, sizeof(uint8_t));
     pos += sizeof(uint8_t);
@@ -244,26 +294,26 @@ int sendGlis(int sock, Gamelist g) {
     //[GPLYR␣id␣x␣y␣p***]
     for (int i = 0; i < 5; i++) {
         if (g.player_list[i].place != 0) {
-        memcpy(buffer+pos, "GPLYR ", 6);
-        pos += 6;
-        memcpy(buffer + pos, g.player_list[i].id, 8);
-        pos += 8;
-        memcpy(buffer + pos, " ", 1);
-        pos += 1;
-        memcpy(buffer + pos, g.player_list[i].x, 3);
-        pos += 3;
-        memcpy(buffer + pos, " ", 1);
-        pos += 1;
-        memcpy(buffer + pos, g.player_list[i].y, 3);
-        pos += 3;
-        memcpy(buffer + pos, " ", 1);
-        pos += 1;
-        char score[5];
-        sprintf(score, "%04d", g.player_list[i].score);
-        memcpy(buffer + pos, score, 4);
-        pos += 4;
-        memcpy(buffer + pos, "***", 3);
-        pos += 3;
+            memcpy(buffer + pos, "GPLYR ", 6);
+            pos += 6;
+            memcpy(buffer + pos, g.player_list[i].id, 8);
+            pos += 8;
+            memcpy(buffer + pos, " ", 1);
+            pos += 1;
+            memcpy(buffer + pos, g.player_list[i].x, 3);
+            pos += 3;
+            memcpy(buffer + pos, " ", 1);
+            pos += 1;
+            memcpy(buffer + pos, g.player_list[i].y, 3);
+            pos += 3;
+            memcpy(buffer + pos, " ", 1);
+            pos += 1;
+            char score[5];
+            sprintf(score, "%04d", g.player_list[i].score);
+            memcpy(buffer + pos, score, 4);
+            pos += 4;
+            memcpy(buffer + pos, "***", 3);
+            pos += 3;
         }
     }
 
