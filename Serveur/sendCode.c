@@ -10,6 +10,7 @@
 #include <time.h>
 #include <stdint.h>
 #include "../includes/labyrinthe.h"
+#include "../includes/gameList.h"
 
 
 int sendSize(int sock, uint8_t ngame) {
@@ -239,4 +240,50 @@ int sendMove(Lab *lab, int socket, char *mess, joueur p) {
         memcpy(response + 18, "***", 3);
         return send(socket, response, 21, 0);
     }
+}
+
+//[GLIS!␣s***]
+int sendGlis(int sock, gamelist g) {
+    int pos = 0;
+    uint8_t s = getNbPlayer(g);
+    char buffer[10+30*s];
+    memcpy(buffer+pos, "GLIS! ", 6);
+    pos += 6;
+    memcpy(buffer + pos, &s, sizeof(uint8_t));
+    pos += sizeof(uint8_t);
+    memcpy(buffer + pos, "***", 3);
+    pos += 3;
+
+    //[GPLYR␣id␣x␣y␣p***]
+    for (int i = 0; i < 5; i++) {
+        if (g.player_list[i].place != 0) {
+        memcpy(buffer+pos, "GPLYR ", 6);
+        pos += 6;
+        memcpy(buffer + pos, g.player_list[i].id, 8);
+        pos += 8;
+        memcpy(buffer + pos, " ", 1);
+        pos += 1;
+        memcpy(buffer + pos, g.player_list[i].x, 3);
+        pos += 3;
+        memcpy(buffer + pos, " ", 1);
+        pos += 1;
+        memcpy(buffer + pos, g.player_list[i].y, 3);
+        pos += 3;
+        memcpy(buffer + pos, " ", 1);
+        pos += 1;
+        char score[5];
+        sprintf(score, "%04d", g.player_list[i].score);
+        memcpy(buffer + pos, score, 4);
+        pos += 4;
+        memcpy(buffer + pos, "***", 3);
+        pos += 3;
+        }
+    }
+
+    if (send(sock, buffer, pos, 0) == -1) {
+        perror("Erreur GLIS!***\n");
+        return 0;
+    }
+    printf("Ok GLIS!***\n");
+    return 1;
 }
