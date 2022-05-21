@@ -1,11 +1,12 @@
 #include "../includes/labyrinthe.h"
 #include "../includes/position.h"
+#include "../includes/joueur.h"
 
-int upmove(Lab* lab, Position* p, char* dir) {
+int upmove(Lab* lab, joueur* p, char* dir) {
     int ghost = 0;
     int d = atoi(dir);
-    int x = atoi(p->x);
-    int y = atoi(p->y);
+    int x = atoi(p->position.x);
+    int y = atoi(p->position.y);
     int i;
 
     for (i = 0; i < d; i++) {
@@ -14,19 +15,20 @@ int upmove(Lab* lab, Position* p, char* dir) {
         if (lab->matrice[x-i][y] == 'G') {
             lab->matrice[x-i][y] = ' ';
             ghost++;
+            p->score += 10;
         }
     }
     lab->matrice[x][y] = ' ';
-    sprintf(p->x, "%03d" , x-i);
+    sprintf(p->position.x, "%03d" , x-i);
     lab->matrice[x-i][y] = '@';
     return ghost;
 }
 
-int downmove(Lab* lab, Position* p, char* dir) {
+int downmove(Lab* lab, joueur* p, char* dir) {
     int ghost = 0;
     int d = atoi(dir);
-    int x = atoi(p->x);
-    int y = atoi(p->y);
+    int x = atoi(p->position.x);
+    int y = atoi(p->position.y);
     int i;
 
     for (i = 0; i < d; i++) {
@@ -35,19 +37,20 @@ int downmove(Lab* lab, Position* p, char* dir) {
         if (lab->matrice[x+i][y] == 'G') {
             lab->matrice[x+i][y] = ' ';
             ghost++;
+            p->score += 10;
         }
     }
     lab->matrice[x][y] = ' ';
-    sprintf(p->x, "%03d" , x+i);
+    sprintf(p->position.x, "%03d" , x+i);
     lab->matrice[x+i][y] = '@';
     return ghost;
 }
 
-int leftmove(Lab* lab, Position* p, char* dir) {
+int leftmove(Lab* lab, joueur* p, char* dir) {
     int ghost = 0;
     int d = atoi(dir);
-    int x = atoi(p->x);
-    int y = atoi(p->y);
+    int x = atoi(p->position.x);
+    int y = atoi(p->position.y);
     int i;
 
     for (i = 0; i < d; i++) {
@@ -56,19 +59,20 @@ int leftmove(Lab* lab, Position* p, char* dir) {
         if (lab->matrice[x][y-i] == 'G') {
             lab->matrice[x][y-i] = ' ';
             ghost++;
+            p->score += 10;
         }
     }
     lab->matrice[x][y] = ' ';
-    sprintf(p->y, "%03d" , y-i);
+    sprintf(p->position.y, "%03d" , y-i);
     lab->matrice[x][y-i] = '@';
     return ghost;
 }
 
-int rightmove(Lab* lab, Position* p, char* dir) {
+int rightmove(Lab* lab, joueur* p, char* dir) {
     int ghost = 0;
     int d = atoi(dir);
-    int x = atoi(p->x);
-    int y = atoi(p->y);
+    int x = atoi(p->position.x);
+    int y = atoi(p->position.y);
     int i;
 
     for (i = 0; i < d; i++) {
@@ -77,10 +81,11 @@ int rightmove(Lab* lab, Position* p, char* dir) {
         if (lab->matrice[x][y+i] == 'G') {
             lab->matrice[x][y+i] = ' ';
             ghost++;
+            p->score += 10;
         }
     }
     lab->matrice[x][y] = ' ';
-    sprintf(p->y, "%03d" , y+i);
+    sprintf(p->position.y, "%03d" , y+i);
     lab->matrice[x][y+i] = '@';
     return ghost;
 }
@@ -89,7 +94,7 @@ int main() {
     Lab* test = init(10, 10, 5);
     test->matrice[1][1] = '@';
     printLab(test);
-    Position* p = initPos("001", "001");
+    joueur* p = initJoueur("prout123", "127.0.0.1######", "5678");
     printf("on veut monter\n");
     upmove(test, p, "3");
     printLab(test);
