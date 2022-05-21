@@ -93,6 +93,12 @@ int rightmove(Lab* lab, joueur *p, char* dir) {
     return ghost;
 }
 
+int move(char* mess, joueur p) {
+    if ()
+}
+
+
+
 /*
 int main() {
     Lab* test = initLab(10, 10, 5);

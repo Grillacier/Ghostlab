@@ -1,5 +1,4 @@
 #include "../includes/labyrinthe.h"
-#include "../includes/joueur.h"
 
 //initialisation du labyrinthe avec les fantomes
 Lab* initLab(int x, int y, uint8_t ghosts) {

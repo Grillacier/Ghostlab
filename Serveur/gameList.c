@@ -1,5 +1,4 @@
 #include "../includes/gameList.h"
-#include "../includes/joueur.h"
 
 //Fonction de tableau
 uint8_t length(Gamelist list[]) {
@@ -59,7 +58,7 @@ Gamelist create(Gamelist list) {
     return list;
 }
 
-Gamelist setUpList(Gamelist list,int i) {
+Gamelist setUpList(Gamelist list, int i) {
     list.started = 0;
     list.create = 0;
     

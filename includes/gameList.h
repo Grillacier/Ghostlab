@@ -3,7 +3,8 @@
 
 #include <stdio.h>
 #include <stdint.h>
-#include "../Serveur/joueur.c"
+#include "joueur.h"
+
 typedef struct gamelist{
     joueur player_list [5];
     int started; // 6 si lancé
@@ -18,6 +19,6 @@ Gamelist addPlayerTo(Gamelist list, char *id, char *p);
 int isCreate(Gamelist list);
 Gamelist upStart(Gamelist list);
 Gamelist create(Gamelist list);
-Gamelist setUpList(Gamelist list,int i);
+Gamelist setUpList(Gamelist list, int i);
 
-#endif GAMELIST_H
+#endif //GAMELIST_H
