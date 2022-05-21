@@ -14,7 +14,7 @@
 #include <pthread.h>
 #include <stdint.h>
 #include "gameList.h"
-#include "../Serveur/sendCode.c"
+#include "sendCode.h"
 
 int listGame(int sock);
 uint8_t prepareGame(int sock, char *ur_id, uint8_t ur_game_id, char *ready);

@@ -1,5 +1,4 @@
 #include "../includes/serveur.h"
-#include "./messageUDP.c"
 
 //Variable globale
 Gamelist list[100];

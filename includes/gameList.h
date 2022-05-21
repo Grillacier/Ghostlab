@@ -4,8 +4,10 @@
 #include <stdio.h>
 #include <stdint.h>
 #include "joueur.h"
+#include "labyrinthe.h"
 
 typedef struct gamelist{
+    Lab *lab;
     joueur player_list [5];
     int started; // 6 si lancé
     char port_cast [5]; 

@@ -1,17 +1,4 @@
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <netdb.h>
-#include <arpa/inet.h>
-#include <string.h>
-#include <unistd.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
-#include <stdint.h>
-#include "../includes/labyrinthe.h"
-#include "../includes/gameList.h"
-
+#include "../includes/sendCode.h"
 
 int sendSize(int sock, uint8_t ngame) {
 
@@ -200,20 +187,20 @@ int sendOgame(int sock, uint8_t id_game, uint8_t nb_player) {
     return 1;
 }
 
-int sendMove(Lab *lab, int socket, char *mess, joueur p) {
+int sendMove(Lab *lab, int socket, char *mess, joueur p, char* port) {
     char distance[4];
     strncpy(distance, mess + 6, 3);
     distance[3] = '\0';
     int ghost;
 
     if (strncmp(mess, "UPMOV", 5) == 0) {
-        ghost = upmove(lab, &p, distance);
+        ghost = upmove(lab, &p, distance, port);
     } else if (strncmp(mess, "DOMOV", 5) == 0) {
-        ghost = downmove(lab, &p, distance);
+        ghost = downmove(lab, &p, distance, port);
     } else if (strncmp(mess, "LEMOV", 5) == 0) {
-        ghost = leftmove(lab, &p, distance);
+        ghost = leftmove(lab, &p, distance, port);
     } else if (strncmp(mess, "RIMOV", 5) == 0) {
-        ghost = rightmove(lab, &p, distance);
+        ghost = rightmove(lab, &p, distance, port);
     }
 
     //[MOVE!␣x␣y***]
