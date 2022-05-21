@@ -115,7 +115,7 @@ int sendUnrok(int sock, uint8_t id_game){
 	char *buffer1 = "UNROK ";
 	char *buffer2 = "***";
 	uint8_t be_id_game = id_game;
-	char * buffer [10];
+	char  buffer [10];
 	memcpy(buffer,buffer1,strlen(buffer1));
 	memcpy(buffer + strlen(buffer1),&be_id_game, sizeof(uint8_t));
 	memcpy(buffer + strlen(buffer1)+sizeof(uint8_t),buffer2, strlen(buffer2));
@@ -127,6 +127,25 @@ int sendUnrok(int sock, uint8_t id_game){
 	return 1;
 }
 
+int sendGobye(int sock){
+	char *buffer = "GOBYE***";
+		if (send(sock,buffer,strlen(buffer),0) == -1){
+			perror("Erreur GOBYE***\n");
+			return 0;
+		}
+		printf("Ok GOBYE***\n");
+		return 1;
+}
+
+int sendSend(int sock){
+	char *buffer = "SEND!***";
+		if (send(sock,buffer,strlen(buffer),0) == -1){
+			perror("Erreur SEND!***\n");
+			return 0;
+		}
+		printf("Ok SEND!***\n");
+		return 1;
+}
 int sendGames(int sock, uint8_t num_game){
 	char *buffer1 = "GAMES ";
 	char *buffer2 = "***";
