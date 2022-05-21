@@ -61,7 +61,8 @@ Gamelist create(Gamelist list) {
 Gamelist setUpList(Gamelist list, int i) {
     list.started = 0;
     list.create = 0;
-    
+    list.lab = initLab(20, 20, 5);
+    fillLab(list.lab, list.lab->ghosts);
     int po = 6001 + i;
     sprintf(list.port_cast,"%d",po);
     list.port_cast[4] = '\0';

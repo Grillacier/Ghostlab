@@ -153,7 +153,7 @@ Lab fillLab(Lab *l, uint8_t nb) {
 }
 
 //deplacements
-int upmove(Lab* lab, joueur *p, char* dir) {
+int upmove(Lab* lab, joueur *p, char* dir, char* port) {
     int ghost = 0;
     int d = atoi(dir);
     int x = atoi(p->x);
@@ -167,6 +167,10 @@ int upmove(Lab* lab, joueur *p, char* dir) {
             lab->matrice[x-i][y] = ' ';
             ghost++;
             p->score += 10;
+            //[SCORE␣id␣p␣x␣y+++]
+            char msg[50];
+            sprintf(msg, "SCORE %s %04d %s %s+++", p->id, p->score, p->x, p->y);
+            sendMess(port, msg);
         }
     }
     lab->matrice[x][y] = ' ';
@@ -176,7 +180,7 @@ int upmove(Lab* lab, joueur *p, char* dir) {
     return ghost;
 }
 
-int downmove(Lab* lab, joueur *p, char* dir) {
+int downmove(Lab* lab, joueur *p, char* dir, char* port) {
     int ghost = 0;
     int d = atoi(dir);
     int x = atoi(p->x);
@@ -190,6 +194,10 @@ int downmove(Lab* lab, joueur *p, char* dir) {
             lab->matrice[x+i][y] = ' ';
             ghost++;
             p->score += 10;
+            //[SCORE␣id␣p␣x␣y+++]
+            char msg[50];
+            sprintf(msg, "SCORE %s %04d %s %s+++", p->id, p->score, p->x, p->y);
+            sendMess(port, msg);
         }
     }
     lab->matrice[x][y] = ' ';
@@ -199,7 +207,7 @@ int downmove(Lab* lab, joueur *p, char* dir) {
     return ghost;
 }
 
-int leftmove(Lab* lab, joueur *p, char* dir) {
+int leftmove(Lab* lab, joueur *p, char* dir, char* port) {
     int ghost = 0;
     int d = atoi(dir);
     int x = atoi(p->x);
@@ -213,6 +221,10 @@ int leftmove(Lab* lab, joueur *p, char* dir) {
             lab->matrice[x][y-i] = ' ';
             ghost++;
             p->score += 10;
+            //[SCORE␣id␣p␣x␣y+++]
+            char msg[50];
+            sprintf(msg, "SCORE %s %04d %s %s+++", p->id, p->score, p->x, p->y);
+            sendMess(port, msg);
         }
     }
     lab->matrice[x][y] = ' ';
@@ -222,7 +234,7 @@ int leftmove(Lab* lab, joueur *p, char* dir) {
     return ghost;
 }
 
-int rightmove(Lab* lab, joueur *p, char* dir) {
+int rightmove(Lab* lab, joueur *p, char* dir, char* port) {
     int ghost = 0;
     int d = atoi(dir);
     int x = atoi(p->x);
@@ -236,6 +248,10 @@ int rightmove(Lab* lab, joueur *p, char* dir) {
             lab->matrice[x][y+i] = ' ';
             ghost++;
             p->score += 10;
+            //[SCORE␣id␣p␣x␣y+++]
+            char msg[50];
+            sprintf(msg, "SCORE %s %04d %s %s+++", p->id, p->score, p->x, p->y);
+            sendMess(port, msg);
         }
     }
     lab->matrice[x][y] = ' ';
@@ -244,11 +260,3 @@ int rightmove(Lab* lab, joueur *p, char* dir) {
     lab->matrice[x][y+i] = initial;
     return ghost;
 }
-
-/*
-int main() {
-    Lab* test = init(10, 10, 5);
-    printLab(test);
-    return 0;
-}
-*/

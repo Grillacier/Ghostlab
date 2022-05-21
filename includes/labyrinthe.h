@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include "messageUDP.h"
 #include "joueur.h"
 
 typedef struct labyrinthe {
@@ -22,9 +23,9 @@ void ghost(Lab *l, uint8_t nb);
 joueur* initPos(Lab* l, joueur* p);
 joueur player(Lab *l, joueur j);
 Lab fillLab(Lab *l, uint8_t nb);
-int upmove(Lab* lab, joueur *p, char* dir);
-int downmove(Lab* lab, joueur *p, char* dir);
-int leftmove(Lab* lab, joueur *p, char* dir);
-int rightmove(Lab* lab, joueur *p, char* dir);
+int upmove(Lab* lab, joueur *p, char* dir, char* port);
+int downmove(Lab* lab, joueur *p, char* dir, char* port);
+int leftmove(Lab* lab, joueur *p, char* dir, char* port);
+int rightmove(Lab* lab, joueur *p, char* dir, char* port);
 
 #endif //LABYRINTHE_H
