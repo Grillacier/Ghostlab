@@ -152,6 +152,99 @@ Lab fillLab(Lab *l, uint8_t nb) {
     return *l;
 }
 
+//deplacements
+int upmove(Lab* lab, joueur *p, char* dir) {
+    int ghost = 0;
+    int d = atoi(dir);
+    int x = atoi(p->x);
+    int y = atoi(p->y);
+    int i;
+
+    for (i = 0; i < d; i++) {
+        if ( x - i - 1 < 0 || lab->matrice[x - i - 1][y] == '+')
+            break;
+        if (lab->matrice[x-i][y] == '#') {
+            lab->matrice[x-i][y] = ' ';
+            ghost++;
+            p->score += 10;
+        }
+    }
+    lab->matrice[x][y] = ' ';
+    sprintf(p->x, "%03d" , x-i);
+    char initial = p->id[0];
+    lab->matrice[x-i][y] = initial;
+    return ghost;
+}
+
+int downmove(Lab* lab, joueur *p, char* dir) {
+    int ghost = 0;
+    int d = atoi(dir);
+    int x = atoi(p->x);
+    int y = atoi(p->y);
+    int i;
+
+    for (i = 0; i < d; i++) {
+        if (x + i + 1 >= lab->x || lab->matrice[x + i + 1][y] == '+')
+            break;
+        if (lab->matrice[x+i][y] == '#') {
+            lab->matrice[x+i][y] = ' ';
+            ghost++;
+            p->score += 10;
+        }
+    }
+    lab->matrice[x][y] = ' ';
+    sprintf(p->x, "%03d" , x+i);
+    char initial = p->id[0];
+    lab->matrice[x+i][y] = initial;
+    return ghost;
+}
+
+int leftmove(Lab* lab, joueur *p, char* dir) {
+    int ghost = 0;
+    int d = atoi(dir);
+    int x = atoi(p->x);
+    int y = atoi(p->y);
+    int i;
+
+    for (i = 0; i < d; i++) {
+        if (y - i - 1 < 0 || lab->matrice[x][y-i-1] == '+')
+            break;
+        if (lab->matrice[x][y-i] == '#') {
+            lab->matrice[x][y-i] = ' ';
+            ghost++;
+            p->score += 10;
+        }
+    }
+    lab->matrice[x][y] = ' ';
+    sprintf(p->y, "%03d" , y-i);
+    char initial = p->id[0];
+    lab->matrice[x][y-i] = initial;
+    return ghost;
+}
+
+int rightmove(Lab* lab, joueur *p, char* dir) {
+    int ghost = 0;
+    int d = atoi(dir);
+    int x = atoi(p->x);
+    int y = atoi(p->y);
+    int i;
+
+    for (i = 0; i < d; i++) {
+        if (y + i + 1 >= lab->y || lab->matrice[x][y+i+1] == '+')
+            break;
+        if (lab->matrice[x][y+i] == '#') {
+            lab->matrice[x][y+i] = ' ';
+            ghost++;
+            p->score += 10;
+        }
+    }
+    lab->matrice[x][y] = ' ';
+    sprintf(p->y, "%03d" , y+i);
+    char initial = p->id[0];
+    lab->matrice[x][y+i] = initial;
+    return ghost;
+}
+
 /*
 int main() {
     Lab* test = init(10, 10, 5);

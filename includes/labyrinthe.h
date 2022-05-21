@@ -22,5 +22,9 @@ void ghost(Lab *l, uint8_t nb);
 joueur* initPos(Lab* l, joueur* p);
 joueur player(Lab *l, joueur j);
 Lab fillLab(Lab *l, uint8_t nb);
+int upmove(Lab* lab, joueur *p, char* dir);
+int downmove(Lab* lab, joueur *p, char* dir);
+int leftmove(Lab* lab, joueur *p, char* dir);
+int rightmove(Lab* lab, joueur *p, char* dir);
 
 #endif //LABYRINTHE_H
