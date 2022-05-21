@@ -25,7 +25,7 @@ void printLab(Lab *l) {
     for (int i = 0; i < l->y; i++) {
         printf("%d ", i);
         for (int j = 0; j < l->x; j++) {
-            printf("%c ", l->matrice[j][i]);
+            printf("%c ", l->matrice[i][j]);
         }
         printf("\n");
     }
