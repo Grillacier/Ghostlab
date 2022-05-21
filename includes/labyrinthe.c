@@ -5,15 +5,14 @@
 
 #define X 20
 #define Y 20
-typedef struct labyrinthe {
 
+typedef struct labyrinthe {
     char matrice[X][Y];
-    // TODO: Ajoutez fantomes
-    // TODO: Ajoutez tableaux de point??
+    int ghosts;
 
 } Lab;
 
-void printLab(Lab* l) {
+void printLab(Lab *l) {
     for (int i = 0; i < X; i++) {
         for (int j = 0; j < Y; j++) {
             printf("%c ", l->matrice[i][j]);
@@ -22,34 +21,7 @@ void printLab(Lab* l) {
     }
 }
 
-
-int notIllegal(Lab l, int px, int py) {
-    if (px < 0 || px > X - 1) {
-        return -1;
-    }
-    if (py < 0 || py > Y - 1) {
-        return -1;
-    }
-    return 1;
-}
-
-int surrounded(Lab l, int px, int py) {
-    if (notIllegal(l, px, py + 1) == 1) {
-        return 1;
-    }
-    if (notIllegal(l, px, py - 1) == 1) {
-        return 1;
-    }
-    if (notIllegal(l, px + 1, py) == 1) {
-        return 1;
-    }
-    if (notIllegal(l, px - 1, py) == 1) {
-        return 1;
-    }
-    return -1;
-}
-
-Lab createLab(Lab* l, int px, int py) {
+Lab createLab(Lab *l, int px, int py) {
     l->matrice[px][py] = ' ';
     int way = rand() % 4;
 
@@ -96,10 +68,22 @@ Lab createLab(Lab* l, int px, int py) {
                 break;
         }
     }
+    return *l;
 }
 
+void ghost(Lab *l, int nb) {
+    for (int i = 0; i < nb; i++) {
+        int x = rand() % X;
+        int y = rand() % Y;
+        while (l->matrice[x][y] != ' ') {
+            x = rand() % X;
+            y = rand() % Y;
+        }
+        l->matrice[x][y] = 'G';
+    }
+}
 
-Lab fillLab(Lab* l) {
+Lab fillLab(Lab *l, int nb) {
     for (int x = 0; x < X; x++) {
         for (int y = 0; y < Y; y++) {
             l->matrice[x][y] = 'n';
@@ -125,20 +109,16 @@ Lab fillLab(Lab* l) {
     }
 
     createLab(l, px, py);
-
-    for (int x = 0; x < X; x++) {
-        for (int y = 0; y < Y; y++) {
-            if (l->matrice[x][y] == 'v') {
-                l->matrice[x][y] = ' ';
-            }
-        }
-    }
+    ghost(l, nb);
+    return *l;
 }
 
-
+/*
 int main() {
     Lab* test;
-    fillLab(test);
+    test->ghosts = 5;
+    fillLab(test, test->ghosts);
     printLab(test);
     return 0;
 }
+*/
