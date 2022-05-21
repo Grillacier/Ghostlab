@@ -30,8 +30,6 @@ Une fois ces commandes entrées dans les terminaux, vous pouvez commencer à jou
 
 **Request.java** : Programme gérant les requêtes à envoyer au serveur
 
-**deplacements.c** : Programme gérant les déplacements du joueur à gauche, à droite, en haut et en bas.
-
 **joueur.c** : Programme permettant d'initialiser un joueur.
 
 **labyrinthe.c** : Programme créant le labyrinthe, les fantômes, puis place le joueur et les fantômes dans le labyrinthe de manière totalement aléatoire.
@@ -41,7 +39,7 @@ Une fois ces commandes entrées dans les terminaux, vous pouvez commencer à jou
 **serveur.c** : Programme principal du serveur
 
 Extensions :
-//A Remplir
+Téléportation : Cette extension a été créée mais pas implémentée (elle ne fonctionne pas). Le but initial de cette extention est de téléporter le joeur aléatoirement quelque part dans le labyrinthe.
 
 Merci de votre attention, nous vous souhaitons une agréable partie sur GhostLab !
 
