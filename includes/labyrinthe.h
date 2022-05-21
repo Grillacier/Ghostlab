@@ -1,5 +1,6 @@
 #ifndef LABYRINTHE_H
 #define LABYRINTHE_H
+
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
