@@ -1,4 +1,5 @@
 #include "../includes/serveur.h"
+#include "./messageUDP.c"
 
 //Variable globale
 Gamelist list[100];
@@ -26,7 +27,59 @@ int listGame(int sock) {
     pthread_mutex_unlock(&verrou);
     return 1;
 }
+uint8_t inGame(int sock,char *ur_id,uint8_t ur_game_id) { 
+    while (1) {
+        char receiver [100];
+	int r = recv(sock, receiver, sizeof(char) * 20 + sizeof(uint8_t), 0);
+        if (r < 0) {
+            perror("INGAME:End of connexion \n");
+            return -2;
+        }
+        if (r == 0) {
+            perror("INGAME: No sended data \n");
+            return -2;
+        }
 
+
+        char request[6];
+        memmove(&request, receiver, sizeof(char) * 5);
+        request[5] = '\0';
+         if (strncmp(receiver, "IQUIT",5) == 0) {
+         	sendGobye(sock);
+         	return -2;
+         }
+          if (strncmp(receiver, "MALL?",5) == 0) {
+          	char umess [200];
+          	memcpy(umess,receiver + sizeof(char)*5,sizeof(char)*r-3);
+         	sendAllMessage(ur_id,list[ur_game_id].port_cast,umess);
+         	return ur_game_id;
+         }
+          if (strncmp(receiver, "SEND?",5) == 0) {
+          	char umess [200];
+          	memcpy(umess,receiver + sizeof(char)*14,sizeof(char)*r-3);
+          	char t_id [8];
+          	memcpy(t_id,receiver + sizeof(char)*6,sizeof(char)*8);
+          	int index = searchById(list[ur_game_id].player_list,t_id);
+          	if(index == -1){
+          		sendNos(sock);
+          		
+          	}
+         	if(sendMessage(ur_id,list[ur_game_id].player_list[index].ip,list[ur_game_id].player_list[index].port,umess)==1){		sendSend(sock);
+         	}
+         	
+         	return ur_game_id;
+         }
+          if (strncmp(receiver, "LIBRE",5) == 0) {
+         	
+         	return ur_game_id;
+         }
+          if (strncmp(receiver, "LIBRE",5)== 0) {
+         	sendGobye(sock);
+         	return ur_game_id;
+         }
+         
+ }
+}
 
 uint8_t prepareGame(int sock, char *ur_id, uint8_t ur_game_id, char *ready) {
     while (1) {
@@ -348,7 +401,11 @@ void *lobby(void *sock) {
 
 
                 while (list[ur_game_id].started == 6) {
-                    printf("GO \n");
+                    ur_game_id = inGame(sock2,ur_id,ur_game_id);
+                    if(ur_game_id == -2){
+                    	printf("FIN DE PARTIE \n");
+                    	close(sock2);
+                    }
                 }
             }
 

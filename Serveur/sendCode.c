@@ -10,6 +10,8 @@
 #include <time.h>
 #include <stdint.h>
 
+
+
 int sendSize(int sock, uint8_t ngame){
 
 	uint16_t v_lt = htons(20);
@@ -83,6 +85,17 @@ int sendDunno(int sock){
 	printf("Ok DUNNO***\n");
 	return 1;
 }
+
+int sendNos(int sock){
+	char *buffer = "NSEND***";
+	if (send(sock,buffer,strlen(buffer),0) == -1){
+		perror("Erreur NSEND***\n");
+		return 0;
+	}
+	printf("Ok NSEND***\n");
+	return 1;
+}
+
 
 int sendRegno(int sock){
 	char *buffer = "REGNO***";
