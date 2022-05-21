@@ -14,12 +14,22 @@ Lab* init(int x, int y, uint8_t ghosts) {
 }
 
 void printLab(Lab *l) {
+    //imprimer le numéro de la colonne
+    printf("  ");
     for (int i = 0; i < l->x; i++) {
-        for (int j = 0; j < l->y; j++) {
-            printf("%c ", l->matrice[i][j]);
+        printf("%d ", i);
+    }
+    printf("\n");
+
+    //imprimer le numéro de la ligne et la matrice
+    for (int i = 0; i < l->y; i++) {
+        printf("%d ", i);
+        for (int j = 0; j < l->x; j++) {
+            printf("%c ", l->matrice[j][i]);
         }
         printf("\n");
     }
+
 }
 
 Lab createLab(Lab *l, int px, int py) {
