@@ -243,7 +243,7 @@ int sendMove(Lab *lab, int socket, char *mess, joueur p) {
 }
 
 //[GLIS!␣s***]
-int sendGlis(int sock, gamelist g) {
+int sendGlis(int sock, Gamelist g) {
     int pos = 0;
     uint8_t s = getNbPlayer(g);
     char buffer[10+30*s];
