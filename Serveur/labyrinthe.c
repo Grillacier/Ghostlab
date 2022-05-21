@@ -1,6 +1,8 @@
-#include "labyrinthe.h"
+#include "../includes/labyrinthe.h"
+#include "../includes/joueur.h"
 
-Lab* init(int x, int y, uint8_t ghosts) {
+//initialisation du labyrinthe avec les fantomes
+Lab* initLab(int x, int y, uint8_t ghosts) {
     Lab* lab = malloc(sizeof(Lab));
     lab->x = x;
     lab->y = y;
@@ -13,15 +15,16 @@ Lab* init(int x, int y, uint8_t ghosts) {
     return lab;
 }
 
+//affichage du labyrinthe
 void printLab(Lab *l) {
-    //imprimer le numéro de la colonne
+    //imprimer le numero de la colonne
     printf("  ");
     for (int i = 0; i < l->x; i++) {
         printf("%d ", i);
     }
     printf("\n");
 
-    //imprimer le numéro de la ligne et la matrice
+    //imprimer le numero de la ligne et la matrice
     for (int i = 0; i < l->y; i++) {
         printf("%d ", i);
         for (int j = 0; j < l->x; j++) {
@@ -29,9 +32,10 @@ void printLab(Lab *l) {
         }
         printf("\n");
     }
-
+    printf("\n");
 }
 
+//creation du chemin du labyrinthe
 Lab createLab(Lab *l, int px, int py) {
     l->matrice[px][py] = ' ';
     int way = rand() % 4;
@@ -41,7 +45,7 @@ Lab createLab(Lab *l, int px, int py) {
         switch (way) {
             case 0:
                 if (py + 2 < l->y) {
-                    if (l->matrice[px][py + 2] == 'n') {
+                    if (l->matrice[px][py + 2] == '&') {
                         l->matrice[px][py + 1] = ' ';
                         createLab(l, px, py + 2);
                     }
@@ -50,7 +54,7 @@ Lab createLab(Lab *l, int px, int py) {
 
             case 1:
                 if (py - 2 > 0) {
-                    if (l->matrice[px][py - 2] == 'n') {
+                    if (l->matrice[px][py - 2] == '&') {
                         l->matrice[px][py - 1] = ' ';
                         createLab(l, px, py - 2);
                     }
@@ -59,7 +63,7 @@ Lab createLab(Lab *l, int px, int py) {
 
             case 2:
                 if (px + 2 < l->x) {
-                    if (l->matrice[px + 2][py] == 'n') {
+                    if (l->matrice[px + 2][py] == '&') {
                         l->matrice[px + 1][py] = ' ';
                         createLab(l, px + 2, py);
                     }
@@ -68,7 +72,7 @@ Lab createLab(Lab *l, int px, int py) {
 
             case 3:
                 if (px - 2 > 0) {
-                    if (l->matrice[px - 2][py] == 'n') {
+                    if (l->matrice[px - 2][py] == '&') {
                         l->matrice[px - 1][py] = ' ';
                         createLab(l, px - 2, py);
                     }
@@ -82,6 +86,7 @@ Lab createLab(Lab *l, int px, int py) {
     return *l;
 }
 
+//placement des fantomes
 void ghost(Lab *l, uint8_t nb) {
     for (int i = 0; i < nb; i++) {
         int x = rand() % l->x;
@@ -90,14 +95,35 @@ void ghost(Lab *l, uint8_t nb) {
             x = rand() % l->x;
             y = rand() % l->y;
         }
-        l->matrice[x][y] = 'G';
+        l->matrice[x][y] = '#';
     }
 }
 
+//place le joueur dans le labyrinthe
+void initPos(Lab* l, joueur* p) {
+    int x = rand() % l->x;
+    int y = rand() % l->y;
+    while (l->matrice[x][y] != ' ') {
+        x = rand() % l->x;
+        y = rand() % l->y;
+    }
+    sprintf(p->x, "%03d", x);
+    sprintf(p->y, "%03d", y);
+}
+
+//placer un joueur
+void player(Lab *l, joueur *j) {
+    if (l->matrice[atoi(j->x)][atoi(j->y)] == ' ') {
+        char* initial;
+        l->matrice[atoi(j->x)][atoi(j->y)] = *strncpy(initial, j->id, 1);
+    }
+}
+
+//remplissage final du labyrinthe
 Lab fillLab(Lab *l, uint8_t nb) {
     for (int x = 0; x < l->x; x++) {
         for (int y = 0; y < l->y; y++) {
-            l->matrice[x][y] = 'n';
+            l->matrice[x][y] = '&';
         }
     }
     for (int x = 0; x < l->x; x += 2) {
