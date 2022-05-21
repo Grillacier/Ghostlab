@@ -19,8 +19,8 @@ Lab* initLab(int x, int y, uint8_t ghosts);
 void printLab(Lab *l);
 Lab createLab(Lab *l, int px, int py);
 void ghost(Lab *l, uint8_t nb);
-void initPos(Lab* l, joueur* p);
-void player(Lab *l, joueur *j);
+joueur* initPos(Lab* l, joueur* p);
+joueur player(Lab *l, joueur j);
 Lab fillLab(Lab *l, uint8_t nb);
 
 #endif //LABYRINTHE_H

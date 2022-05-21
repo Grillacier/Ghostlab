@@ -1,7 +1,7 @@
 #include "../includes/labyrinthe.h"
 #include "../includes/joueur.h"
 
-int upmove(Lab* lab, joueur* p, char* dir) {
+int upmove(Lab* lab, joueur *p, char* dir) {
     int ghost = 0;
     int d = atoi(dir);
     int x = atoi(p->x);
@@ -24,7 +24,7 @@ int upmove(Lab* lab, joueur* p, char* dir) {
     return ghost;
 }
 
-int downmove(Lab* lab, joueur* p, char* dir) {
+int downmove(Lab* lab, joueur *p, char* dir) {
     int ghost = 0;
     int d = atoi(dir);
     int x = atoi(p->x);
@@ -47,7 +47,7 @@ int downmove(Lab* lab, joueur* p, char* dir) {
     return ghost;
 }
 
-int leftmove(Lab* lab, joueur* p, char* dir) {
+int leftmove(Lab* lab, joueur *p, char* dir) {
     int ghost = 0;
     int d = atoi(dir);
     int x = atoi(p->x);
@@ -70,7 +70,7 @@ int leftmove(Lab* lab, joueur* p, char* dir) {
     return ghost;
 }
 
-int rightmove(Lab* lab, joueur* p, char* dir) {
+int rightmove(Lab* lab, joueur *p, char* dir) {
     int ghost = 0;
     int d = atoi(dir);
     int x = atoi(p->x);
@@ -93,35 +93,38 @@ int rightmove(Lab* lab, joueur* p, char* dir) {
     return ghost;
 }
 
+/*
 int main() {
     Lab* test = initLab(10, 10, 5);
-    //test->matrice[1][1] = '@';
     printLab(test);
     printf("on crée un joueur\n");
-    joueur* p = initJoueur("prout123", "127.0.0.1######", "5678");
+    joueur p = initJoueur("prout123", "127.0.0.1######", "5678");
     printf("on initialise sa position\n");
-    initPos(test, p);
+    initPos(test, &p);
+    printf("p.x : %s\n", p.x);
+    printf("p.y : %s\n", p.y);
     printf("on le place dans le labyrinthe\n");
     player(test, p);
 
     printf("on veut monter\n");
-    upmove(test, p, "3");
+    upmove(test, &p, "3");
     printLab(test);
     printf("on est monté\n");
 
     printf("on veut descendre\n");
-    downmove(test, p, "3");
+    downmove(test, &p, "3");
     printLab(test);
     printf("on est descendu\n");
 
     printf("on veut gauche\n");
-    leftmove(test, p, "3");
+    leftmove(test, &p, "3");
     printLab(test);
     printf("on a gauche\n");
 
     printf("on veut droite\n");
-    rightmove(test, p, "3");
+    rightmove(test, &p, "3");
     printLab(test);
     printf("on a droite\n");
     return 0;
 }
+*/

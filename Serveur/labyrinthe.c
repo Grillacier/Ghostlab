@@ -100,7 +100,8 @@ void ghost(Lab *l, uint8_t nb) {
 }
 
 //place le joueur dans le labyrinthe
-void initPos(Lab* l, joueur* p) {
+joueur* initPos(Lab* l, joueur* p) {
+    srand(time(NULL));
     int x = rand() % l->x;
     int y = rand() % l->y;
     while (l->matrice[x][y] != ' ') {
@@ -109,14 +110,16 @@ void initPos(Lab* l, joueur* p) {
     }
     sprintf(p->x, "%03d", x);
     sprintf(p->y, "%03d", y);
+    return p;
 }
 
 //placer un joueur
-void player(Lab *l, joueur *j) {
-    if (l->matrice[atoi(j->x)][atoi(j->y)] == ' ') {
-        char* initial;
-        l->matrice[atoi(j->x)][atoi(j->y)] = *strncpy(initial, j->id, 1);
+joueur player(Lab *l, joueur j) {
+    if (l->matrice[atoi(j.x)][atoi(j.y)] == ' ') {
+        char initial = j.id[0];
+        l->matrice[atoi(j.x)][atoi(j.y)] = initial;
     }
+    return j;
 }
 
 //remplissage final du labyrinthe
