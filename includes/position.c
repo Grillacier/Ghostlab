@@ -1,5 +1,12 @@
 #include "position.h"
 
+Position* initPos(char* x, char* y) {
+    Position *pos = malloc(sizeof(*pos));
+    strcpy(pos->x, x);
+    strcpy(pos->y, y);
+    return pos;
+}
+
 int setPos(Position* p, char* x, char* y) {
     strcpy(p->x, x);
     strcpy(p->y, y);

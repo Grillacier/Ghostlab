@@ -10,6 +10,7 @@ typedef struct position {
     char y[4];
 } Position;
 
+Position* initPos(char* x, char* y);
 int setPos(Position* p, char* x, char* y);
 int addToChar(Position* p, char* base, char* ajout);
 int rmToChar(Position* p, char* base, char* ajout);

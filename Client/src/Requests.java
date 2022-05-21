@@ -103,8 +103,12 @@ public class Requests {
                     receiveGames(br);
                     break;
                 case 4:
-                    unregister(pw);
-                    canStart = receiveUnreg(br);
+                    if (canStart) {
+                        unregister(pw);
+                        canStart = receiveUnreg(br);
+                        break;
+                    }
+                    System.out.println("Vous n'êtes pas dans une partie");
                     break;
                 case 5:
                     askSize(pw);
@@ -321,8 +325,6 @@ public class Requests {
             int game = buffer[6];
             short height = (short) ((buffer[8] & 0xff) << 8 | (buffer[9] & 0xff));
             short width = (short) ((buffer[8] & 0xff) << 8 | (buffer[9] & 0xff));
-            //short height = (short) (buffer[8] + buffer[9]);
-            //short width = (short) (buffer[11] + buffer[12]);
             if (this.show)
                 System.out.println("La taille du labyrinthe est de " + height + "x" + width);
             else
@@ -384,8 +386,6 @@ public class Requests {
         int game = buffer[6];
         short height = (short) ((buffer[8] & 0xff) << 8 | (buffer[9] & 0xff));
         short width = (short) ((buffer[8] & 0xff) << 8 | (buffer[9] & 0xff));
-        //short height = (short) (buffer[8] + buffer[9]);
-        //short width = (short) (buffer[11] + buffer[12]);
         int ghosts = buffer[14];
 
         if (this.show) {
