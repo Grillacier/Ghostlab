@@ -26,19 +26,21 @@ int listGame(int sock) {
     pthread_mutex_unlock(&verrou);
     return 1;
 }
-uint8_t inGame(int sock,char *ur_id,uint8_t ur_game_id) {
+uint8_t inGame(int sock, char *ur_id, uint8_t ur_game_id) {
     sendWelco(sock, ur_game_id, list[ur_game_id].lab, list[ur_game_id].port_cast);
     int v = searchById(list[ur_game_id].player_list, ur_id);
+    initPos(list[ur_game_id].lab, &list[ur_game_id].player_list[v]);
+    player(list[ur_game_id].lab, list[ur_game_id].player_list[v]);
     sendPosit(sock, ur_id, list[ur_game_id].player_list[v].x, list[ur_game_id].player_list[v].y);
     while (1) {
         char receiver [250];
 	int r = recv(sock, receiver, 249, 0);
         if (r < 0) {
-            perror("INGAME:End of connexion \n");
+            perror("INGAME: End of connexion \n");
             return -2;
         }
         if (r == 0) {
-            perror("INGAME: No sended data \n");
+            perror("INGAME: No sent data\n");
             return -2;
         }
 
@@ -60,6 +62,7 @@ uint8_t inGame(int sock,char *ur_id,uint8_t ur_game_id) {
           if (strncmp(receiver, "UPMOV?", 5) == 0 || strncmp(receiver, "DOMOV?", 5) == 0 ||
                   strncmp(receiver, "LEMOV?", 5) == 0 || strncmp(receiver, "RIMOV?", 5) == 0) {
               sendMove(list[ur_game_id].lab, sock, receiver, list[ur_game_id].player_list[searchById(list[ur_game_id].player_list, ur_id)], list[ur_game_id].port_cast);
+              printLab(list[ur_game_id].lab);
           }
 
           if (strncmp(receiver, "SEND?",5) == 0) {
@@ -352,7 +355,7 @@ int chooseGame(int sock, char *ur_id) {
             pthread_mutex_lock(&verrou);
             int check = isCreate(list[id_game]);
             if (check == 0 || list[id_game].started > 5) {
-                perror("CHOOSEGAME: Partie non créer");
+                perror("CHOOSEGAME: Partie non créée");
                 sendRegno(sock);
                 pthread_mutex_unlock(&verrou);
                 return -1;

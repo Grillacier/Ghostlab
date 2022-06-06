@@ -7,7 +7,7 @@ int sendMess(char *port, char *message) {
     memset(&hints, 0, sizeof(struct addrinfo));
     hints.ai_family = AF_INET;
     hints.ai_socktype = SOCK_DGRAM;
-    int r = getaddrinfo("235.235.235.235", port, &hints, &first_info);
+    int r = getaddrinfo("235.1.2.4", port, &hints, &first_info);
     if (r == 0) {
         if (first_info != NULL) {
             struct sockaddr *saddr = first_info->ai_addr;
@@ -24,7 +24,7 @@ int sendAllMessage(char *from, char *port, char *message) {
     memset(&hints, 0, sizeof(struct addrinfo));
     hints.ai_family = AF_INET;
     hints.ai_socktype = SOCK_DGRAM;
-    int r = getaddrinfo("235.235.235.235", port, &hints, &first_info);
+    int r = getaddrinfo("235.1.2.4", port, &hints, &first_info);
     if (r == 0) {
         if (first_info != NULL) {
             struct sockaddr *saddr = first_info->ai_addr;

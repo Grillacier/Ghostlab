@@ -11,7 +11,7 @@ int sendMall(int sock) {
 }
 
 int sendWelco(int sock, uint8_t idg, Lab* l, char *p) {
-    char *ip = "235.235.235.235.";
+    char *ip = "235.1.2.4######";
     char *wel = "WELCO ";
     char buffer[50];
     char *space = " ";

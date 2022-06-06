@@ -161,7 +161,7 @@ int upmove(Lab* lab, joueur *p, char* dir, char* port) {
     int i;
 
     for (i = 0; i < d; i++) {
-        if ( x - i - 1 < 0 || lab->matrice[x - i - 1][y] == '+')
+        if (x - i - 1 < 0 || lab->matrice[x - i - 1][y] == '+')
             break;
         if (lab->matrice[x-i][y] == '#') {
             lab->matrice[x-i][y] = ' ';
