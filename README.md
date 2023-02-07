@@ -1,11 +1,5 @@
 # Projet Programmation Réseaux - GhostLab
 
-Groupe 25 :
-- Alaia Silvestre (n°étudiant : 21960871)
-- Ibrahima Ba (n°étudiant : 21956569)
-- Davy Chhay (n°étudiant :  21960886)
-
-
 **Compilation et exécution :**
 Depuis un premier terminal, en étant dans le dossier du projet, il faut exécuter la commande : make
 
